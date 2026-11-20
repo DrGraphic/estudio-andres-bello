@@ -55,6 +55,7 @@ h2{font-family:var(--font-display);font-weight:600;font-size:20px;margin:0 0 12p
 #cv3d{position:relative;aspect-ratio:16/9;width:100%;touch-action:none}
 #cv3d canvas{display:block;width:100%;height:100%}
 .bar3d{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--rule)}
+.vidnote{color:var(--ink-2);margin:0 0 10px;font-size:14px} .vidold{margin-top:12px;color:var(--ink-2);font-size:14px} .vidold summary{cursor:pointer}
 .fsbtn{margin-left:auto;display:inline-flex;align-items:center;gap:7px;font:inherit;font-size:13px;padding:7px 12px;border-radius:9px;border:1px solid var(--rule);background:var(--sheet-2);color:var(--ink);cursor:pointer}
 .fsbtn:hover{border-color:var(--sun)} .fsbtn:focus-visible{outline:2px solid var(--sun);outline-offset:2px}
 .fsbtn .fs-off{display:none} #three.fs .fsbtn .fs-on{display:none} #three.fs .fsbtn .fs-off{display:inline}
@@ -187,7 +188,10 @@ ul.notes li span{color:var(--ink-2)}
 
 <section aria-labelledby="video">
   <h2 id="video">Video del recorrido</h2>
-  <video controls preload="none" playsinline poster="renders/00-isometrica.jpg" style="width:100%;border-radius:10px;border:1px solid var(--rule);background:#000;display:block" src="video/estudio-andres-bello-recorrido.mp4">Tu navegador no puede reproducir este video.</video>
+  <p class="vidnote">Recorrido hiperrealista de 36 segundos, del lobby a la sala de podcast. Sin audio.</p>
+  <video controls preload="none" playsinline poster="video/poster-hiperrealista.jpg" style="width:100%;aspect-ratio:16/9;border-radius:10px;border:1px solid var(--rule);background:#000;display:block" src="video/estudio-andres-bello-hiperrealista.mp4">Tu navegador no puede reproducir este video.</video>
+  <details class="vidold"><summary>Ver la versión anterior con diapositivas</summary>
+  <video controls preload="none" playsinline poster="renders/00-isometrica.jpg" style="width:100%;aspect-ratio:16/9;border-radius:10px;border:1px solid var(--rule);background:#000;display:block;margin-top:10px" src="video/estudio-andres-bello-recorrido.mp4">Tu navegador no puede reproducir este video.</video></details>
 </section>
 
 <section aria-labelledby="renders">
