@@ -160,6 +160,11 @@ ul.notes li span{color:var(--ink-2)}
   </aside>
 </section>
 
+<section aria-labelledby="video">
+  <h2 id="video">Video del recorrido</h2>
+  <video controls preload="none" playsinline poster="renders/00-isometrica.jpg" style="width:100%;border-radius:10px;border:1px solid var(--rule);background:#000;display:block" src="video/estudio-andres-bello-recorrido.mp4">Tu navegador no puede reproducir este video.</video>
+</section>
+
 <section aria-labelledby="renders">
   <h2 id="renders">Renders</h2>
   <div class="gallery" id="gallery"></div>
@@ -466,6 +471,7 @@ try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", rend
 new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 drawLegend(); syncUI(); render();
 const RENDERS = [
+  ["00-isometrica.jpg", "Vista isométrica", "El local completo, sin techo, con todas las áreas."],
   ["01-lobby.jpg", "Lobby y recepción", "Mostrador en la esquina noreste; vidrio hacia el estudio."],
   ["02-oficina.jpg", "Oficina", "Divisiones de vidrio y la única ventana del local."],
   ["03-pasillo.jpg", "Pasillo central", "Estudio a la izquierda, bodega y baño a la derecha."],
