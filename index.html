@@ -9,39 +9,41 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* Lámina de arquitectura: papel frío, tinta grafito, acento ámbar (luz de tungsteno), vidrio cobalto */
-  --paper:#F3F4F2; --sheet:#FFFFFF; --ink:#1C1F22; --ink-2:#5A6066; --rule:#D5D8D6;
-  --accent:#C77A12; --glass:#3A74C9;
-  --prod:#F6E7CC; --work:#DCE6F4; --serv:#E6E7E4; --circ:#FFFFFF; --open:#EEF0EE;
-  --wall:#2A2D30; --wall-new:#4A4F55; --wood:#D9C3A1; --soft:#B9BCC0; --green:#7FA36B;
+  /* Paleta drgraphic (muestreada del logo): azul noche #1B1E3D, rojo #C11D22, amarillo #FCDB04, azul #364EA2 */
+  --paper:#F4F5F9; --sheet:#FFFFFF; --ink:#1B1E3D; --ink-2:#51567A; --rule:#D8DAE5;
+  --accent:#C11D22; --glass:#364EA2; --sun:#FCDB04;
+  --prod:#FFF4C2; --work:#E2E7F6; --serv:#E7E8F0; --circ:#FFFFFF; --open:#EEF0F6;
+  --wall:#1B1E3D; --wall-new:#4A4F75; --wood:#D9C3A1; --soft:#B8BBCB; --green:#7FA36B;
   --font-display:"IBM Plex Sans", system-ui, sans-serif;
   --font-body:"IBM Plex Sans", system-ui, sans-serif;
   --font-mono:"IBM Plex Mono", ui-monospace, monospace;
-  --bg3d:#E9EBE9;
+  --bg3d:#E9EBF2;
   color-scheme: light;
-  /* layout: cabecera, luego visor (plano o 3D) con panel lateral, luego tabla y notas */
+  /* layout: cabecera con logo, visor (plano o 3D) con panel lateral, video, renders, tabla y notas */
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --paper:#141618; --sheet:#1C1F22; --ink:#E9EBEA; --ink-2:#A3A9AE; --rule:#33383C;
-    --accent:#E9A23B; --glass:#7AA7EA;
-    --prod:#3A3020; --work:#22303F; --serv:#2A2D30; --circ:#1C1F22; --open:#24282B;
-    --wall:#D9DCDA; --wall-new:#AEB3B7; --wood:#7A6648; --soft:#5B6065; --green:#6E9460;
-    --bg3d:#202326; color-scheme: dark;
+    --paper:#11132A; --sheet:#1B1E3D; --ink:#F2F3F8; --ink-2:#A9ADC7; --rule:#33375C;
+    --accent:#EF4A4F; --glass:#8FA3E6; --sun:#FCDB04;
+    --prod:#3B3518; --work:#24305E; --serv:#272B4D; --circ:#1B1E3D; --open:#22264A;
+    --wall:#E6E7EF; --wall-new:#A9ADC7; --wood:#7A6648; --soft:#565B80; --green:#6E9460;
+    --bg3d:#15172F; color-scheme: dark;
   }
 }
 :root[data-theme="dark"]{
-  --paper:#141618; --sheet:#1C1F22; --ink:#E9EBEA; --ink-2:#A3A9AE; --rule:#33383C;
-  --accent:#E9A23B; --glass:#7AA7EA;
-  --prod:#3A3020; --work:#22303F; --serv:#2A2D30; --circ:#1C1F22; --open:#24282B;
-  --wall:#D9DCDA; --wall-new:#AEB3B7; --wood:#7A6648; --soft:#5B6065; --green:#6E9460;
-  --bg3d:#202326; color-scheme: dark;
+  --paper:#11132A; --sheet:#1B1E3D; --ink:#F2F3F8; --ink-2:#A9ADC7; --rule:#33375C;
+  --accent:#EF4A4F; --glass:#8FA3E6; --sun:#FCDB04;
+  --prod:#3B3518; --work:#24305E; --serv:#272B4D; --circ:#1B1E3D; --open:#22264A;
+  --wall:#E6E7EF; --wall-new:#A9ADC7; --wood:#7A6648; --soft:#565B80; --green:#6E9460;
+  --bg3d:#15172F; color-scheme: dark;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55}
 .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 60px;display:grid;gap:28px}
 header{display:grid;gap:6px}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:4px}.brand img{border-radius:10px;display:block}
+.stripe{height:4px;display:grid;grid-template-columns:1fr 1fr 1fr;border-radius:2px;overflow:hidden;max-width:120px;margin-top:8px}.stripe i:nth-child(1){background:#FCDB04}.stripe i:nth-child(2){background:#364EA2}.stripe i:nth-child(3){background:#C11D22}
 .eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;color:var(--ink-2);text-transform:uppercase}
 h1{font-family:var(--font-display);font-weight:600;font-size:clamp(26px,3.4vw,36px);line-height:1.15;margin:0;text-wrap:balance}
 h2{font-family:var(--font-display);font-weight:600;font-size:20px;margin:0 0 12px;text-wrap:balance}
@@ -120,9 +122,10 @@ ul.notes li span{color:var(--ink-2)}
 <body>
 <div class="wrap">
 <header>
-  <div class="eyebrow">Oficina Andrés Bello · propuesta de distribución</div>
+  <div class="brand"><img src="brand/logo-drgraphic.png" alt="drgraphic" width="52" height="52"><div class="eyebrow">Oficina Andrés Bello · propuesta de distribución</div></div>
   <h1>Estudio creativo: clases, podcast, fotos y música</h1>
   <p class="lede">Un pasillo central une la entrada con todas las áreas. El lobby recibe en la esquina de la puerta, la oficina de vidrio aprovecha la única ventana y los dos salones de producción quedan adentro, donde se controla toda la luz y el sonido.</p>
+  <div class="stripe" aria-hidden="true"><i></i><i></i><i></i></div>
   <div class="facts"><span>Local <b>7.78 × 14.00 m</b></span><span>Interior <b>≈ 109 m²</b></span><span>Balcón <b>7.8 m²</b></span><span>Techo expuesto negro <b>≈ 3.5 m</b></span><span>Escala leída del plano AutoCAD</span></div>
 </header>
 
@@ -375,7 +378,7 @@ function drawFurn(f, g, C) {
     case "sweep": rect(r, { fill: C.sheet, stroke: C.ink2, "stroke-width": 0.012, "stroke-dasharray": "0.05 0.05" }, g); break;
     case "screen": case "logo": rect(r, { fill: C.accent }, g); break;
     case "mirror": rect(r, { fill: C.glass, opacity: .7 }, g); break;
-    case "light": el("circle", { cx, cy, r: 0.13, fill: C.accent, opacity: .9 }, g); el("circle", { cx, cy, r: 0.21, fill: "none", stroke: C.accent, "stroke-width": 0.015 }, g); break;
+    case "light": el("circle", { cx, cy, r: 0.13, fill: css("--sun"), stroke: C.ink, "stroke-width": 0.02 }, g); el("circle", { cx, cy, r: 0.21, fill: "none", stroke: C.ink2, "stroke-width": 0.015 }, g); break;
     case "cam": {
       const a = rad(f.a), L = 0.55, s = 0.35;
       const p1 = [cx + L * Math.cos(a - s), cy + L * Math.sin(a - s)], p2 = [cx + L * Math.cos(a + s), cy + L * Math.sin(a + s)];
@@ -410,7 +413,7 @@ function drawLegend() {
   h += `<div><span class="sw" style="background:var(--sheet);border:0;border-top:3px solid var(--glass)"></span>División nueva de vidrio hasta la losa</div>`;
   h += `<div><span class="sw" style="border:0;border-top:2px dotted var(--ink-2)"></span>Cortina acústica negra</div>`;
   h += `<div><span class="sw" style="border:0;border-top:3px solid var(--accent)"></span>Recorrido desde la entrada</div>`;
-  h += `<div><span class="dot" style="background:var(--accent)"></span>Luz de estudio <span class="dot" style="background:var(--ink);border-radius:2px;margin-left:10px"></span>Cámara</div>`;
+  h += `<div><span class="dot" style="background:var(--sun);box-shadow:0 0 0 1px var(--ink)"></span>Luz de estudio <span class="dot" style="background:var(--ink);border-radius:2px;margin-left:10px"></span>Cámara</div>`;
   document.getElementById("legend").innerHTML = h;
 }
 
