@@ -6,7 +6,7 @@
 <title>Estudio Andrés Bello</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   /* Paleta drgraphic (muestreada del logo): azul noche #1B1E3D, rojo #C11D22, amarillo #FCDB04, azul #364EA2 */
@@ -14,9 +14,9 @@
   --accent:#C11D22; --glass:#364EA2; --sun:#FCDB04;
   --prod:#FFF4C2; --work:#E2E7F6; --serv:#E7E8F0; --circ:#FFFFFF; --open:#EEF0F6;
   --wall:#1B1E3D; --wall-new:#4A4F75; --wood:#D9C3A1; --soft:#B8BBCB; --green:#7FA36B;
-  --font-display:"IBM Plex Sans", system-ui, sans-serif;
-  --font-body:"IBM Plex Sans", system-ui, sans-serif;
-  --font-mono:"IBM Plex Mono", ui-monospace, monospace;
+  --font-display:-apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", system-ui, sans-serif;
+  --font-body:-apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif;
+  --font-mono:ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
   --bg3d:#E9EBF2;
   color-scheme: light;
   /* layout: cabecera con logo, visor (plano o 3D) con panel lateral, video, renders, tabla y notas */
@@ -40,21 +40,21 @@
 *{box-sizing:border-box}
 html,body{margin:0}
 body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55}
-.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 60px;display:grid;gap:28px}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 60px;display:grid;grid-template-columns:minmax(0,1fr);gap:28px}
 header{display:grid;gap:6px}
 .brand{display:flex;align-items:center;gap:12px;margin-bottom:4px}.brand img{border-radius:10px;display:block}
 .stripe{height:4px;display:grid;grid-template-columns:1fr 1fr 1fr;border-radius:2px;overflow:hidden;max-width:120px;margin-top:8px}.stripe i:nth-child(1){background:#FCDB04}.stripe i:nth-child(2){background:#364EA2}.stripe i:nth-child(3){background:#C11D22}
 .eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;color:var(--ink-2);text-transform:uppercase}
-h1{font-family:var(--font-display);font-weight:600;font-size:clamp(26px,3.4vw,36px);line-height:1.15;margin:0;text-wrap:balance}
+h1{font-family:var(--font-display);font-weight:700;letter-spacing:-0.02em;font-size:clamp(26px,3.4vw,36px);line-height:1.15;margin:0;text-wrap:balance}
 h2{font-family:var(--font-display);font-weight:600;font-size:20px;margin:0 0 12px;text-wrap:balance}
 .lede{max-width:68ch;color:var(--ink-2);margin:0}
 .facts{display:flex;flex-wrap:wrap;gap:8px 18px;font-family:var(--font-mono);font-size:13px;color:var(--ink-2);margin-top:6px}
 .facts b{color:var(--ink);font-weight:500}
 .viewer{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start}
-.stage{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;overflow:hidden;display:grid}
+.stage{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr)}
 .toolbar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--rule)}
 .seg{display:inline-flex;border:1px solid var(--rule);border-radius:7px;overflow:hidden}
-.seg button{font:inherit;font-size:13px;padding:6px 11px;border:0;background:transparent;color:var(--ink-2);cursor:pointer}
+.seg button{font:inherit;font-size:13px;padding:7px 12px;min-height:36px;border:0;background:transparent;color:var(--ink-2);cursor:pointer}
 .seg button+button{border-left:1px solid var(--rule)}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
 .seg button:focus-visible,.chk input:focus-visible,.days button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -62,17 +62,19 @@ h2{font-family:var(--font-display);font-weight:600;font-size:20px;margin:0 0 12p
 .chk input{accent-color:var(--accent)}
 .lbl{font-family:var(--font-mono);font-size:11px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em}
 #plan{display:block;width:100%;height:auto;max-height:78vh;touch-action:manipulation}
-#three{width:100%;height:min(78vh,760px);display:none;position:relative}
-#three canvas{display:block}
-.views3d{position:absolute;left:10px;bottom:10px;display:flex;gap:6px;flex-wrap:wrap}
-.views3d button{font:inherit;font-size:12px;padding:5px 9px;border-radius:6px;border:1px solid var(--rule);background:var(--sheet);color:var(--ink);cursor:pointer}
+#three{width:100%;display:none;flex-direction:column}
+#cv3d{position:relative;height:min(70vh,700px);min-height:340px;touch-action:none}
+#cv3d canvas{display:block;width:100%;height:100%}
+.bar3d{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--rule)}
+.views3d{display:flex;gap:8px;overflow-x:auto;padding:10px 12px;border-top:1px solid var(--rule);scrollbar-width:none}.views3d::-webkit-scrollbar{display:none}
+.views3d button{flex:none;font:inherit;font-size:13px;padding:7px 12px;border-radius:6px;border:1px solid var(--rule);background:var(--sheet);color:var(--ink);cursor:pointer}
 .hint3d{position:absolute;right:10px;bottom:12px;font-size:12px;color:var(--ink-2);background:var(--sheet);padding:3px 8px;border-radius:6px;border:1px solid var(--rule)}
-.modes3d{position:absolute;left:10px;top:10px;background:var(--sheet)}
+.modes3d{background:var(--sheet)}
 .caption3d{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:10px 16px;display:grid;gap:2px;text-align:center;max-width:min(520px,80%)}
 .caption3d b{font-size:16px}.caption3d span{font-size:13px;color:var(--ink-2)}
 .caption3d[hidden],.dpad[hidden],.views3d[hidden]{display:none}
-.dpad{position:absolute;right:12px;bottom:48px;display:grid;grid-template-columns:repeat(3,40px);grid-template-rows:repeat(2,40px);gap:6px}
-.dpad button{font:inherit;font-size:14px;border-radius:8px;border:1px solid var(--rule);background:var(--sheet);color:var(--ink);cursor:pointer;touch-action:none;user-select:none}
+.dpad{position:absolute;right:12px;bottom:44px;display:grid;grid-template-columns:repeat(3,48px);grid-template-rows:repeat(2,48px);gap:6px}
+.dpad button{font:inherit;font-size:16px;opacity:.92;border-radius:8px;border:1px solid var(--rule);background:var(--sheet);color:var(--ink);cursor:pointer;touch-action:none;user-select:none}
 .dpad [data-k="f"]{grid-column:2;grid-row:1}.dpad [data-k="l"]{grid-column:1;grid-row:2}.dpad [data-k="b"]{grid-column:2;grid-row:2}.dpad [data-k="r"]{grid-column:3;grid-row:2}
 .gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 .gallery figure{margin:0;background:var(--sheet);border:1px solid var(--rule);border-radius:10px;overflow:hidden;display:grid}
@@ -112,7 +114,19 @@ ul.notes{margin:0;padding-left:18px;display:grid;gap:8px;max-width:70ch}
 ul.notes li{color:var(--ink)}
 ul.notes li span{color:var(--ink-2)}
 .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
-@media (max-width:900px){.viewer{grid-template-columns:1fr}.days,.cols{grid-template-columns:1fr}}
+@media (max-width:900px){.viewer{grid-template-columns:minmax(0,1fr)}.days,.cols{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:640px){
+  .wrap{padding:20px 14px 48px;gap:22px}
+  .toolbar,.bar3d{padding:10px;gap:8px}
+  .toolbar .seg,.bar3d .seg{display:flex;width:100%}
+  .toolbar .seg button,.bar3d .seg button{flex:1;min-height:42px;padding:6px 8px}
+  #cv3d{height:62vh;min-height:320px}
+  .hint3d{display:none}
+  .caption3d{top:10px;max-width:calc(100% - 20px);padding:8px 12px}
+  .caption3d b{font-size:15px}
+  .dpad{right:10px;bottom:10px}
+  .eyebrow{font-size:11px}
+}
 @media (prefers-reduced-motion: reduce){*{transition:none!important}}
 </style>
 <script type="importmap">
@@ -142,19 +156,23 @@ ul.notes li span{color:var(--ink-2)}
         <button id="m-foto" aria-pressed="true">Set foto y entrevista</button><button id="m-clase" aria-pressed="false">Aula 8 alumnos</button>
       </div>
       <label class="chk"><input type="checkbox" id="flow" checked> Recorridos</label>
-      <label class="chk" id="ceilwrap"><input type="checkbox" id="ceil" checked> Ductos y parrillas</label>
     </div>
     <svg id="plan" role="img" aria-label="Planta de la propuesta, norte arriba"></svg>
     <div id="three">
-      <div class="modes3d seg" role="group" aria-label="Modo de navegación">
-        <button id="n-orbit" aria-pressed="true">Maqueta</button><button id="n-walk" aria-pressed="false">Caminar</button><button id="n-tour" aria-pressed="false">Recorrido guiado</button>
+      <div class="bar3d">
+        <div class="modes3d seg" role="group" aria-label="Modo de navegación">
+          <button id="n-orbit" aria-pressed="true">Maqueta</button><button id="n-walk" aria-pressed="false">Caminar</button><button id="n-tour" aria-pressed="false">Recorrido guiado</button>
+        </div>
+        <label class="chk" id="ceilwrap"><input type="checkbox" id="ceil" checked> Ductos y parrillas</label>
       </div>
-      <div class="caption3d" id="cap3d" hidden><b id="capT"></b><span id="capD"></span></div>
-      <div class="views3d" id="views3d"></div>
-      <div class="dpad" id="dpad" hidden>
-        <button data-k="f" aria-label="Avanzar">▲</button><button data-k="l" aria-label="Girar a la izquierda">◀</button><button data-k="b" aria-label="Retroceder">▼</button><button data-k="r" aria-label="Girar a la derecha">▶</button>
+      <div id="cv3d">
+        <div class="caption3d" id="cap3d" hidden><b id="capT"></b><span id="capD"></span></div>
+        <div class="dpad" id="dpad" hidden>
+          <button data-k="f" aria-label="Avanzar">▲</button><button data-k="l" aria-label="Girar a la izquierda">◀</button><button data-k="b" aria-label="Retroceder">▼</button><button data-k="r" aria-label="Girar a la derecha">▶</button>
+        </div>
+        <div class="hint3d" id="hint3d">Arrastra para girar · rueda para acercar</div>
       </div>
-      <div class="hint3d" id="hint3d">Arrastra para girar · rueda para acercar</div>
+      <div class="views3d" id="views3d" role="group" aria-label="Vistas de la maqueta"></div>
     </div>
   </div>
   <aside class="side">
@@ -257,7 +275,7 @@ function drawPlan() {
 
   // balcón
   rect(DATA.balcony, { fill: "url(#hatch)", stroke: "none" }, svg);
-  txt(W / 2, -0.62, "Balcón", { "font-size": 0.24, "text-anchor": "middle", fill: C.ink2, "font-family": "IBM Plex Sans, system-ui, sans-serif" }, svg);
+  txt(W / 2, -0.62, "Balcón", { "font-size": 0.24, "text-anchor": "middle", fill: C.ink2, "font-family": "-apple-system, BlinkMacSystemFont, Inter, system-ui, sans-serif" }, svg);
 
   // recintos
   const rooms = state.scen === "prop" ? DATA.prop.rooms : DATA.actual.rooms;
@@ -315,7 +333,7 @@ function drawPlan() {
   });
 
   // rótulos
-  const gT = el("g", { "pointer-events": "none", "font-family": "IBM Plex Sans, system-ui, sans-serif" }, svg);
+  const gT = el("g", { "pointer-events": "none", "font-family": "-apple-system, BlinkMacSystemFont, Inter, system-ui, sans-serif" }, svg);
   rooms.forEach(rm => {
     if (!rm.label_at) return;
     let [x, y] = rm.label_at;
@@ -325,11 +343,11 @@ function drawPlan() {
     const lines = rm.lines || [rm.name];
     const fs = small ? 0.19 : 0.26;
     lines.forEach((s, k) => txt(x, y + k * fs * 1.15, s, { "font-size": fs, "font-weight": small ? 400 : 600, "text-anchor": "middle", fill: C.ink }, gT));
-    txt(x, y + lines.length * fs * 1.15 + 0.02, `${rm.area.toFixed(1)} m²`, { "font-size": small ? 0.17 : 0.21, "text-anchor": "middle", fill: C.ink2, "font-family": "IBM Plex Mono, ui-monospace, monospace" }, gT);
+    txt(x, y + lines.length * fs * 1.15 + 0.02, `${rm.area.toFixed(1)} m²`, { "font-size": small ? 0.17 : 0.21, "text-anchor": "middle", fill: C.ink2, "font-family": "ui-monospace, SF Mono, JetBrains Mono, Menlo, monospace" }, gT);
   });
 
   // cotas generales
-  const gd = el("g", { stroke: C.ink2, "stroke-width": 0.015, fill: C.ink2, "font-family": "IBM Plex Mono, ui-monospace, monospace", "font-size": 0.2 }, svg);
+  const gd = el("g", { stroke: C.ink2, "stroke-width": 0.015, fill: C.ink2, "font-family": "ui-monospace, SF Mono, JetBrains Mono, Menlo, monospace", "font-size": 0.2 }, svg);
   el("line", { x1: 0, y1: -1.75, x2: W, y2: -1.75 }, gd);
   [0, W].forEach(x => el("line", { x1: x, y1: -1.85, x2: x, y2: -1.65 }, gd));
   txt(W / 2, -1.83, "7.78", { "text-anchor": "middle", stroke: "none" }, gd);
@@ -339,9 +357,9 @@ function drawPlan() {
   // norte
   const gn = el("g", { transform: `translate(${W + 0.62} -1.6)` }, svg);
   el("path", { d: "M0 -0.32 L0.16 0.18 L0 0.08 L-0.16 0.18 Z", fill: C.ink }, gn);
-  txt(0, 0.48, "N", { "font-size": 0.22, "text-anchor": "middle", fill: C.ink, "font-family": "IBM Plex Mono, ui-monospace, monospace" }, gn);
+  txt(0, 0.48, "N", { "font-size": 0.22, "text-anchor": "middle", fill: C.ink, "font-family": "ui-monospace, SF Mono, JetBrains Mono, Menlo, monospace" }, gn);
   // entrada
-  txt(7.33, D + 0.62, "Entrada", { "font-size": 0.22, "text-anchor": "middle", fill: C.accent, "font-family": "IBM Plex Sans, system-ui, sans-serif", "font-weight": 600 }, svg);
+  txt(7.33, D + 0.62, "Entrada", { "font-size": 0.22, "text-anchor": "middle", fill: C.accent, "font-family": "-apple-system, BlinkMacSystemFont, Inter, system-ui, sans-serif", "font-weight": 600 }, svg);
 
   // recorridos
   if (state.scen === "prop" && state.flow) {
@@ -387,7 +405,7 @@ function drawFurn(f, g, C) {
     }
     default: rect(r, { fill: C.soft, stroke: st, "stroke-width": sw }, g);
   }
-  if (f.label) txt(cx, cy + 0.05, f.label, { "font-size": 0.14, "text-anchor": "middle", fill: C.ink, "font-family": "IBM Plex Sans, system-ui, sans-serif", transform: h > w * 1.8 ? `rotate(-90 ${cx} ${cy + 0.05})` : "" }, g);
+  if (f.label) txt(cx, cy + 0.05, f.label, { "font-size": 0.14, "text-anchor": "middle", fill: C.ink, "font-family": "-apple-system, BlinkMacSystemFont, Inter, system-ui, sans-serif", transform: h > w * 1.8 ? `rotate(-90 ${cx} ${cy + 0.05})` : "" }, g);
 }
 
 function highlight() {
@@ -452,7 +470,7 @@ function syncUI() {
   document.getElementById("flow").parentElement.style.display = state.scen === "prop" && state.view === "2d" ? "" : "none";
   document.getElementById("ceilwrap").style.display = state.view === "3d" ? "" : "none";
   document.getElementById("plan").style.display = state.view === "2d" ? "block" : "none";
-  document.getElementById("three").style.display = state.view === "3d" ? "block" : "none";
+  document.getElementById("three").style.display = state.view === "3d" ? "flex" : "none";
 }
 
 function render() {
@@ -500,6 +518,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 const host = document.getElementById("three");
+const cvHost = document.getElementById("cv3d");
 let renderer, scene, camera, controls, root, inited = false;
 const H = 3.5, W = DATA.W, D = DATA.D;
 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -510,7 +529,7 @@ function init() {
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  host.prepend(renderer.domElement);
+  cvHost.prepend(renderer.domElement);
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(42, 1, 0.05, 200);
   controls = new OrbitControls(camera, renderer.domElement);
@@ -522,15 +541,16 @@ function init() {
   sun.shadow.mapSize.set(2048, 2048);
   Object.assign(sun.shadow.camera, { left: -10, right: 10, top: 10, bottom: -10 });
   scene.add(sun);
-  const views = { "Isométrica": [[9, 13, 12], [0, 0.6, 0]], "Planta": [[0, 22, 0.01], [0, 0, 0]], "Lobby y estudio": [[...P(8.6, 16.2)].flatMap((v, i) => i === 0 ? [v, 6.0] : [v]), [...P(3.6, 9.4)].flatMap((v, i) => i === 0 ? [v, 0.3] : [v])], "Set del estudio": [[...P(2.48, 9.85)].flatMap((v, i) => i === 0 ? [v, 2.3] : [v]), [...P(2.48, 5.3)].flatMap((v, i) => i === 0 ? [v, 1.0] : [v])], "Sala de música": [[...P(7.4, 6.6)].flatMap((v, i) => i === 0 ? [v, 6.2] : [v]), [...P(2.2, 2.2)].flatMap((v, i) => i === 0 ? [v, 0.3] : [v])] };
+  const views = { "Isométrica": "iso", "Planta": "top", "Lobby y estudio": [[...P(8.6, 16.2)].flatMap((v, i) => i === 0 ? [v, 6.0] : [v]), [...P(3.6, 9.4)].flatMap((v, i) => i === 0 ? [v, 0.3] : [v])], "Set del estudio": [[...P(2.48, 9.85)].flatMap((v, i) => i === 0 ? [v, 2.3] : [v]), [...P(2.48, 5.3)].flatMap((v, i) => i === 0 ? [v, 1.0] : [v])], "Sala de música": [[...P(7.4, 6.6)].flatMap((v, i) => i === 0 ? [v, 6.2] : [v]), [...P(2.2, 2.2)].flatMap((v, i) => i === 0 ? [v, 0.3] : [v])] };
   const vb = document.getElementById("views3d");
-  Object.entries(views).forEach(([n, [pos, tgt]]) => {
+  Object.entries(views).forEach(([n, val]) => {
+    const [pos, tgt] = typeof val === "string" ? [val, null] : val;
     const b = document.createElement("button"); b.textContent = n;
-    b.onclick = () => { camera.position.set(...pos); controls.target.set(...tgt); controls.update(); };
+    b.onclick = () => { nav.userMoved = true; if (typeof pos === "string") fitView(pos); else { camera.position.set(...pos); controls.target.set(...tgt); controls.update(); } };
     vb.appendChild(b);
   });
-  camera.position.set(9, 13, 12); controls.target.set(0, 0.6, 0);
-  new ResizeObserver(resize).observe(host);
+  new ResizeObserver(resize).observe(cvHost);
+  controls.addEventListener("start", () => { nav.userMoved = true; });
   resize();
   setupNav();
   let last = performance.now();
@@ -630,9 +650,9 @@ function setMode(m) {
   document.getElementById("dpad").hidden = m !== "walk";
   document.getElementById("cap3d").hidden = m !== "tour";
   document.getElementById("hint3d").textContent = m === "orbit" ? "Arrastra para girar · rueda para acercar" : m === "walk" ? "W A S D o flechas para moverte · arrastra para mirar · Mayús para ir rápido" : "El recorrido va de la entrada hacia adentro";
-  if (m === "walk") { nav.x = 7.3; nav.y = 13.4; nav.yaw = -Math.PI / 2 - 0.35; nav.pitch = 0; }
+  if (m === "walk") { nav.x = 5.9; nav.y = 13.3; nav.yaw = -Math.PI / 2 - 0.12; nav.pitch = 0; }
   if (m === "tour") { nav.tourT = 0; nav.tourPlaying = true; nav.lastCap = null; if (!state.ceil) { state.ceil = true; document.getElementById("ceil").checked = true; window.build3D(); } }
-  if (m === "orbit") { nav.tourPlaying = false; camera.position.set(9, 13, 12); controls.target.set(0, 0.6, 0); controls.update(); }
+  if (m === "orbit") { nav.tourPlaying = false; nav.userMoved = false; fitView("iso"); }
   tourBtn();
 }
 function setupNav() {
@@ -659,8 +679,18 @@ function setupNav() {
   });
 }
 function resize() {
-  const w = host.clientWidth || 800, h = host.clientHeight || 600;
-  renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix();
+  const w = cvHost.clientWidth || 800, h = cvHost.clientHeight || 600;
+  renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
+  if (nav.mode === "orbit" && !nav.userMoved) fitView("iso");
+}
+function fitView(kind) {
+  const R = 8.6, aspect = camera.aspect || 1, v = THREE.MathUtils.degToRad(camera.fov);
+  const h = 2 * Math.atan(Math.tan(v / 2) * aspect), fit = Math.min(v, h);
+  const dist = R / Math.sin(fit / 2) * (kind === "top" ? 0.92 : aspect < 1 ? 1.08 : 0.98);
+  const dir = kind === "top" ? new THREE.Vector3(0, 1, 0.001) : aspect < 1 ? new THREE.Vector3(0.28, 0.86, 0.48) : new THREE.Vector3(0.62, 0.68, 0.46);
+  const tgt = new THREE.Vector3(0, 0.6, -0.5);
+  camera.position.copy(tgt).addScaledVector(dir.normalize(), dist);
+  controls.target.copy(tgt); controls.update();
 }
 const mat = (c, o = {}) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.85 }, o));
 function box(r, y0, y1, m, parent, cast = true) {
