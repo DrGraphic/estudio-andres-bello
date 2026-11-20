@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estudio Andrés Bello</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Lámina de arquitectura: papel frío, tinta grafito, acento ámbar (luz de tungsteno), vidrio cobalto */
+  --paper:#F3F4F2; --sheet:#FFFFFF; --ink:#1C1F22; --ink-2:#5A6066; --rule:#D5D8D6;
+  --accent:#C77A12; --glass:#3A74C9;
+  --prod:#F6E7CC; --work:#DCE6F4; --serv:#E6E7E4; --circ:#FFFFFF; --open:#EEF0EE;
+  --wall:#2A2D30; --wall-new:#4A4F55; --wood:#D9C3A1; --soft:#B9BCC0; --green:#7FA36B;
+  --font-display:"IBM Plex Sans", system-ui, sans-serif;
+  --font-body:"IBM Plex Sans", system-ui, sans-serif;
+  --font-mono:"IBM Plex Mono", ui-monospace, monospace;
+  --bg3d:#E9EBE9;
+  color-scheme: light;
+  /* layout: cabecera, luego visor (plano o 3D) con panel lateral, luego tabla y notas */
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#141618; --sheet:#1C1F22; --ink:#E9EBEA; --ink-2:#A3A9AE; --rule:#33383C;
+    --accent:#E9A23B; --glass:#7AA7EA;
+    --prod:#3A3020; --work:#22303F; --serv:#2A2D30; --circ:#1C1F22; --open:#24282B;
+    --wall:#D9DCDA; --wall-new:#AEB3B7; --wood:#7A6648; --soft:#5B6065; --green:#6E9460;
+    --bg3d:#202326; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#141618; --sheet:#1C1F22; --ink:#E9EBEA; --ink-2:#A3A9AE; --rule:#33383C;
+  --accent:#E9A23B; --glass:#7AA7EA;
+  --prod:#3A3020; --work:#22303F; --serv:#2A2D30; --circ:#1C1F22; --open:#24282B;
+  --wall:#D9DCDA; --wall-new:#AEB3B7; --wood:#7A6648; --soft:#5B6065; --green:#6E9460;
+  --bg3d:#202326; color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 20px 60px;display:grid;gap:28px}
+header{display:grid;gap:6px}
+.eyebrow{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;color:var(--ink-2);text-transform:uppercase}
+h1{font-family:var(--font-display);font-weight:600;font-size:clamp(26px,3.4vw,36px);line-height:1.15;margin:0;text-wrap:balance}
+h2{font-family:var(--font-display);font-weight:600;font-size:20px;margin:0 0 12px;text-wrap:balance}
+.lede{max-width:68ch;color:var(--ink-2);margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:8px 18px;font-family:var(--font-mono);font-size:13px;color:var(--ink-2);margin-top:6px}
+.facts b{color:var(--ink);font-weight:500}
+.viewer{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start}
+.stage{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;overflow:hidden;display:grid}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--rule)}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:7px;overflow:hidden}
+.seg button{font:inherit;font-size:13px;padding:6px 11px;border:0;background:transparent;color:var(--ink-2);cursor:pointer}
+.seg button+button{border-left:1px solid var(--rule)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--sheet)}
+.seg button:focus-visible,.chk input:focus-visible,.days button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.chk{display:inline-flex;gap:6px;align-items:center;font-size:13px;color:var(--ink-2);cursor:pointer}
+.chk input{accent-color:var(--accent)}
+.lbl{font-family:var(--font-mono);font-size:11px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.05em}
+#plan{display:block;width:100%;height:auto;max-height:78vh;touch-action:manipulation}
+#three{width:100%;height:min(78vh,760px);display:none;position:relative}
+#three canvas{display:block}
+.views3d{position:absolute;left:10px;bottom:10px;display:flex;gap:6px;flex-wrap:wrap}
+.views3d button{font:inherit;font-size:12px;padding:5px 9px;border-radius:6px;border:1px solid var(--rule);background:var(--sheet);color:var(--ink);cursor:pointer}
+.hint3d{position:absolute;right:10px;bottom:12px;font-size:12px;color:var(--ink-2);background:var(--sheet);padding:3px 8px;border-radius:6px;border:1px solid var(--rule)}
+.modes3d{position:absolute;left:10px;top:10px;background:var(--sheet)}
+.caption3d{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:10px 16px;display:grid;gap:2px;text-align:center;max-width:min(520px,80%)}
+.caption3d b{font-size:16px}.caption3d span{font-size:13px;color:var(--ink-2)}
+.caption3d[hidden],.dpad[hidden],.views3d[hidden]{display:none}
+.dpad{position:absolute;right:12px;bottom:48px;display:grid;grid-template-columns:repeat(3,40px);grid-template-rows:repeat(2,40px);gap:6px}
+.dpad button{font:inherit;font-size:14px;border-radius:8px;border:1px solid var(--rule);background:var(--sheet);color:var(--ink);cursor:pointer;touch-action:none;user-select:none}
+.dpad [data-k="f"]{grid-column:2;grid-row:1}.dpad [data-k="l"]{grid-column:1;grid-row:2}.dpad [data-k="b"]{grid-column:2;grid-row:2}.dpad [data-k="r"]{grid-column:3;grid-row:2}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.gallery figure{margin:0;background:var(--sheet);border:1px solid var(--rule);border-radius:10px;overflow:hidden;display:grid}
+.gallery button{all:unset;cursor:zoom-in;display:block}
+.gallery button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.gallery img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;background:var(--rule)}
+.gallery figcaption{padding:9px 12px;font-size:14px}
+.gallery figcaption span{display:block;color:var(--ink-2);font-size:13px}
+.lb{position:fixed;inset:0;background:rgba(10,11,12,.92);display:grid;place-items:center;padding:20px;z-index:50}
+.lb[hidden]{display:none}
+.lb img{max-width:100%;max-height:86vh;border-radius:6px}
+.lb p{color:#eee;margin:10px 0 0;text-align:center;font-size:14px}
+.lb button{position:absolute;top:14px;right:16px;font:inherit;font-size:14px;padding:6px 12px;border-radius:7px;border:1px solid #555;background:#1c1f22;color:#eee;cursor:pointer}
+@media (max-width:900px){.gallery{grid-template-columns:1fr}}
+.side{display:grid;gap:14px}
+.card{background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:14px 16px}
+.card h3{margin:0 0 4px;font-size:16px;font-weight:600}
+.card .area{font-family:var(--font-mono);font-size:22px;font-weight:500;color:var(--accent);font-variant-numeric:tabular-nums}
+.card p{margin:6px 0 0;font-size:14px;color:var(--ink-2)}
+.legend{display:grid;gap:7px;font-size:13px}
+.legend div{display:flex;gap:8px;align-items:center}
+.sw{width:22px;height:12px;border-radius:2px;border:1px solid var(--rule);flex:none}
+.days{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.days button{all:unset;cursor:pointer;display:grid;gap:4px;background:var(--sheet);border:1px solid var(--rule);border-radius:10px;padding:14px 16px}
+.days button[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.days b{font-size:15px}
+.days span{font-size:14px;color:var(--ink-2)}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--sheet);border:1px solid var(--rule);border-radius:10px;overflow:hidden}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-family:var(--font-mono);font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-2)}
+td.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+tfoot td{font-weight:600}
+.tablewrap{overflow-x:auto}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+ul.notes{margin:0;padding-left:18px;display:grid;gap:8px;max-width:70ch}
+ul.notes li{color:var(--ink)}
+ul.notes li span{color:var(--ink-2)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
+@media (max-width:900px){.viewer{grid-template-columns:1fr}.days,.cols{grid-template-columns:1fr}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+<script type="importmap">
+{"imports":{"three":"./vendor/three.module.min.js","three/addons/":"./vendor/addons/"}}
+</script>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Oficina Andrés Bello · propuesta de distribución</div>
+  <h1>Estudio creativo: clases, podcast, fotos y música</h1>
+  <p class="lede">Un pasillo central une la entrada con todas las áreas. El lobby recibe en la esquina de la puerta, la oficina de vidrio aprovecha la única ventana y los dos salones de producción quedan adentro, donde se controla toda la luz y el sonido.</p>
+  <div class="facts"><span>Local <b>7.78 × 14.00 m</b></span><span>Interior <b>≈ 109 m²</b></span><span>Balcón <b>7.8 m²</b></span><span>Techo expuesto negro <b>≈ 3.5 m</b></span><span>Escala leída del plano AutoCAD</span></div>
+</header>
+
+<section class="viewer" aria-label="Plano y vista 3D">
+  <div class="stage">
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="Escenario">
+        <button id="sc-prop" aria-pressed="true">Propuesta</button><button id="sc-act" aria-pressed="false">Estado actual</button>
+      </div>
+      <div class="seg" role="group" aria-label="Vista">
+        <button id="v-2d" aria-pressed="true">Plano</button><button id="v-3d" aria-pressed="false">Vista 3D</button>
+      </div>
+      <div class="seg" role="group" aria-label="Modo del estudio" id="modeseg">
+        <button id="m-foto" aria-pressed="true">Set foto y entrevista</button><button id="m-clase" aria-pressed="false">Aula 8 alumnos</button>
+      </div>
+      <label class="chk"><input type="checkbox" id="flow" checked> Recorridos</label>
+      <label class="chk" id="ceilwrap"><input type="checkbox" id="ceil" checked> Ductos y parrillas</label>
+    </div>
+    <svg id="plan" role="img" aria-label="Planta de la propuesta, norte arriba"></svg>
+    <div id="three">
+      <div class="modes3d seg" role="group" aria-label="Modo de navegación">
+        <button id="n-orbit" aria-pressed="true">Maqueta</button><button id="n-walk" aria-pressed="false">Caminar</button><button id="n-tour" aria-pressed="false">Recorrido guiado</button>
+      </div>
+      <div class="caption3d" id="cap3d" hidden><b id="capT"></b><span id="capD"></span></div>
+      <div class="views3d" id="views3d"></div>
+      <div class="dpad" id="dpad" hidden>
+        <button data-k="f" aria-label="Avanzar">▲</button><button data-k="l" aria-label="Girar a la izquierda">◀</button><button data-k="b" aria-label="Retroceder">▼</button><button data-k="r" aria-label="Girar a la derecha">▶</button>
+      </div>
+      <div class="hint3d" id="hint3d">Arrastra para girar · rueda para acercar</div>
+    </div>
+  </div>
+  <aside class="side">
+    <div class="card" id="info" aria-live="polite"></div>
+    <div class="card legend" id="legend"></div>
+  </aside>
+</section>
+
+<section aria-labelledby="renders">
+  <h2 id="renders">Renders</h2>
+  <div class="gallery" id="gallery"></div>
+</section>
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Render ampliado"><button id="lbx">Cerrar</button><figure style="margin:0"><img id="lbimg" alt=""><p id="lbcap"></p></figure></div>
+
+<section aria-labelledby="dias">
+  <h2 id="dias">Un día de trabajo en cada modo</h2>
+  <div class="days" id="days"></div>
+</section>
+
+<section aria-labelledby="areas">
+  <h2 id="areas">Cuadro de áreas</h2>
+  <div class="tablewrap"><table id="tbl"></table></div>
+</section>
+
+<section class="cols">
+  <div>
+    <h2>Notas para la obra</h2>
+    <ul class="notes">
+      <li>Todos los tabiques nuevos suben hasta la losa. <span>Con el techo abierto, un muro que se queda a 2.70 m deja pasar el sonido por arriba.</span></li>
+      <li>Regla de obra: los muros existentes se quedan; toda división nueva es de vidrio. <span>Entre la sala de música y el estudio va el vidrio más grueso: doble laminado acústico con cámara de aire, con cortina por el lado de la sala.</span></li>
+      <li>Todos los vidrios llevan cortina negra en riel. <span>Abierta da luz y amplitud; cerrada controla la luz y los reflejos en las sesiones. La bodega va en vidrio esmerilado para que no se vea el equipo guardado.</span></li>
+      <li>Batería sobre tarima aislada con apoyos de goma. <span>Corta los golpes del pedal y del bombo que viajan por el piso.</span></li>
+      <li>Ductos con silenciador y rejillas de baja velocidad en la sala de música y el estudio. <span>El ruido del aire es lo primero que se oye en una grabación.</span></li>
+      <li>Parrillas de tubo colgadas a ≈ 3.0 m sobre los dos salones. <span>Ahí se cuelgan luces y bafles negros; hay que confirmar la carga de la losa.</span></li>
+      <li>Circuitos eléctricos separados para luces de producción, audio y oficina.</li>
+    </ul>
+  </div>
+  <div>
+    <h2>Supuestos que conviene confirmar</h2>
+    <ul class="notes">
+      <li>Altura libre ≈ 3.5 m a la losa. <span>Dato aproximado; medir antes de pedir la parrilla.</span></li>
+      <li>Medidas tomadas del PDF a escala, con margen de ±2 cm. <span>Se verificó la escala con tres cotas del plano (4.71, 7.78 y 10.24 m).</span></li>
+      <li>Áreas netas a cara de muro; tabiques nuevos de 10 cm en el dibujo.</li>
+      <li>El fondo de papel de 2.72 m y el eje de 4.2 m del set alcanzan para cuerpo entero con lente de 35–50 mm. <span>Para 85 mm, abre la puerta de vidrio y dispara desde el pasillo.</span></li>
+      <li>Revisar el reglamento del edificio por horarios de ruido.</li>
+    </ul>
+  </div>
+</section>
+</div>
+
+<script>
+const DATA = {"W": 7.78, "D": 14.0, "existWalls": [[-0.2, -1.4, 0, 14.2], [7.78, -1.4, 7.98, 14.2], [-0.2, -1.4, 7.98, -1.2], [-0.2, -0.2, 1.53, 0], [6.37, -0.2, 7.78, 0], [-0.2, 14.0, 6.88, 14.2], [0, 4.3, 0.1, 4.7], [0, 11.53, 0.15, 12.3], [7.62, 11.53, 7.78, 12.3], [6.37, 0, 6.57, 0.74], [6.37, 1.5, 6.57, 4.27], [6.57, 2.05, 7.78, 2.25], [7.26, 4.06, 7.78, 4.27], [4.71, 1.5, 4.91, 3.76], [4.71, 3.56, 6.37, 3.76], [5.65, 1.5, 6.37, 1.7], [6.21, 8.52, 7.78, 8.72], [6.21, 8.72, 6.41, 9.21], [6.21, 9.9, 7.78, 10.11], [0, 9.95, 3.0, 10.15]], "glass": [[2.53, -0.17, 6.37, -0.03], [-0.17, 12.3, -0.03, 14.0]], "balcony": [0, -1.2, 7.78, -0.2], "existDoors": [{"gap": [1.53, -0.2, 2.53, 0], "hinge": [1.56, -0.2], "r": 0.95, "a0": 0, "a1": -90}, {"gap": [6.37, 0.74, 6.57, 1.5], "hinge": [6.57, 1.5], "r": 0.74, "a0": -90, "a1": 0}, {"gap": [6.57, 4.06, 7.26, 4.27], "hinge": [6.6, 4.17], "r": 0.66, "a0": 0, "a1": -90}, {"gap": [6.21, 9.21, 6.41, 9.9], "hinge": [6.31, 9.9], "r": 0.67, "a0": -90, "a1": 0}, {"gap": [6.88, 14.0, 7.78, 14.2], "hinge": [7.73, 14.0], "r": 0.85, "a0": 180, "a1": 270}], "fixtures": [{"t": "wc", "r": [7.3, 1.62, 7.78, 2.02]}, {"t": "wc", "r": [7.3, 2.42, 7.78, 2.82]}, {"t": "wc", "r": [7.3, 8.82, 7.78, 9.22]}, {"t": "sink", "r": [7.35, 0.25, 7.78, 0.75]}, {"t": "sink", "r": [7.3, 3.2, 7.78, 3.75]}, {"t": "sink", "r": [7.35, 9.35, 7.78, 9.8]}], "prop": {"walls": [{"r": [0, 4.7, 4.91, 4.8], "k": "glass"}, {"r": [4.91, 3.76, 5.01, 3.86], "k": "glass"}, {"r": [4.91, 4.66, 5.01, 4.8], "k": "glass"}, {"r": [4.91, 4.8, 5.01, 8.85], "k": "glass"}, {"r": [4.91, 9.85, 5.01, 9.95], "k": "glass"}, {"r": [3.0, 9.95, 5.01, 10.15], "k": "glass"}, {"r": [3.6, 10.15, 3.7, 10.3], "k": "glass"}, {"r": [3.6, 11.15, 3.7, 14.0], "k": "glass"}, {"r": [6.21, 5.1, 7.78, 5.2], "k": "glass"}, {"r": [6.21, 5.2, 6.31, 7.4], "k": "glass"}, {"r": [6.21, 8.25, 6.31, 8.52], "k": "glass"}], "doors": [{"gap": [4.91, 3.86, 5.01, 4.66], "hinge": [4.91, 4.66], "r": 0.8, "a0": -90, "a1": -180, "glass": false}, {"gap": [4.91, 8.85, 5.01, 9.85], "hinge": [4.91, 9.85], "r": 1.0, "a0": -90, "a1": -180, "glass": true}, {"gap": [3.6, 10.3, 3.7, 11.15], "hinge": [3.6, 10.3], "r": 0.85, "a0": 90, "a1": 180, "glass": true}, {"gap": [6.21, 7.4, 6.31, 8.25], "hinge": [6.31, 8.25], "r": 0.85, "a0": -90, "a1": 0, "glass": false}], "rooms": [{"id": "musica", "name": "Sala de m\u00fasica y podcast", "type": "prod", "rects": [[0, 0, 4.71, 4.7], [4.71, 0, 6.37, 1.5], [4.91, 1.7, 6.37, 3.56], [4.71, 3.76, 4.91, 4.7]], "label_at": [1.75, 0.58], "lines": ["Sala de m\u00fasica", "y podcast"], "uses": "Set fijo de podcast (3 micr\u00f3fonos), bater\u00eda electr\u00f3nica sobre tarima aislada, teclado, clases de m\u00fasica. Rinc\u00f3n de control en el nicho.", "enc": "Muros existentes; vidrio ac\u00fastico doble hacia el estudio y el pasillo, con cortina negra", "area": 27.5}, {"id": "estudio", "name": "Estudio multiprop\u00f3sito", "type": "prod", "rects": [[0, 4.8, 4.91, 9.95]], "label_at": [2.45, 7.2], "label_clase": [2.45, 9.0], "lines": ["Estudio", "multiprop\u00f3sito"], "uses": "Fotos de cuerpo entero con fondo de papel de 2.72 m, set de entrevistas con dos sillones, aula para 8 alumnos.", "enc": "Vidrio ac\u00fastico con cortina hacia la sala de m\u00fasica, el pasillo y el lobby; el fondo de papel tapa el vidrio norte", "area": 25.3}, {"id": "oficina", "name": "Oficina", "type": "work", "rects": [[0, 10.15, 3.6, 14.0]], "label_at": [1.8, 11.15], "lines": ["Oficina"], "uses": "Escritorio, dos sillas de visita y archivo. \u00danica ventana al oeste.", "enc": "Divisiones de vidrio con cortina", "area": 13.7}, {"id": "lobby", "name": "Lobby y recepci\u00f3n", "type": "work", "rects": [[3.7, 10.15, 7.78, 14.0], [5.01, 10.11, 7.78, 10.15]], "label_at": [5.2, 11.95], "lines": ["Lobby y", "recepci\u00f3n"], "uses": "Mostrador de recepci\u00f3n en la esquina noreste con el logo detr\u00e1s, sof\u00e1 de espera junto a la oficina.", "enc": "Abierto al pasillo", "area": 15.7}, {"id": "pasillo", "name": "Pasillo", "type": "circ", "rects": [[5.01, 3.76, 6.37, 4.27], [5.01, 4.27, 6.21, 10.11], [6.21, 4.27, 7.78, 5.1]], "label_at": [5.3, 6.6], "lines": ["Pasillo"], "vertical": true, "uses": "Conecta el lobby con todas las \u00e1reas. Ancho libre 1.20 m.", "enc": "\u2014", "area": 9.0}, {"id": "bodega", "name": "Bodega de equipos", "type": "serv", "rects": [[6.31, 5.2, 7.78, 8.52]], "label_at": [7.05, 6.25], "lines": ["Bodega"], "uses": "Luces, tr\u00edpodes, rollos de fondo, sillas plegables del aula.", "enc": "Vidrio esmerilado y puerta", "area": 4.9}, {"id": "b1", "name": "Ba\u00f1o 1", "type": "serv", "rects": [[6.57, 0, 7.78, 2.05]], "label_at": [7.17, 1.2], "lines": ["Ba\u00f1o"], "uses": "Existente, se entra por la sala de m\u00fasica.", "enc": "Existente", "area": 2.5}, {"id": "b2", "name": "Ba\u00f1o 2", "type": "serv", "rects": [[6.57, 2.25, 7.78, 4.06]], "label_at": [7.0, 2.7], "lines": ["Ba\u00f1o"], "uses": "Existente, ba\u00f1o de visitas desde el pasillo.", "enc": "Existente", "area": 2.2}, {"id": "zoe", "name": "Ba\u00f1o y maquillaje", "type": "serv", "rects": [[6.41, 8.72, 7.78, 9.9]], "label_at": [6.85, 9.05], "lines": ["Ba\u00f1o"], "uses": "Ba\u00f1o existente (Hab. Zoe) con espejo de maquillaje, junto al estudio.", "enc": "Existente", "area": 1.6}], "furn": [{"t": "riser", "r": [2.7, 0.4, 4.55, 2.2]}, {"t": "drums", "r": [3.0, 0.65, 4.25, 1.85]}, {"t": "chair", "r": [3.41, 1.84, 3.83, 2.26]}, {"t": "keys", "r": [0.12, 0.55, 0.52, 1.95]}, {"t": "chair", "r": [0.64, 1.04, 1.06, 1.46]}, {"t": "amp", "r": [0.15, 2.15, 0.55, 2.55]}, {"t": "round", "r": [0.95, 2.75, 2.35, 4.15], "label": "Mesa de podcast"}, {"t": "chair", "r": [0.34, 3.21, 0.82, 3.69]}, {"t": "chair", "r": [2.48, 3.21, 2.96, 3.69]}, {"t": "chair", "r": [1.41, 4.19, 1.89, 4.67]}, {"t": "cam", "r": [3.6, 3.3, 3.9, 3.6], "a": 180}, {"t": "cam", "r": [1.5, 2.1, 1.8, 2.4], "a": 90}, {"t": "light", "r": [3.15, 4.05, 3.55, 4.45]}, {"t": "light", "r": [0.2, 4.1, 0.6, 4.5]}, {"t": "panel", "r": [0.0, 2.75, 0.08, 4.55]}, {"t": "panel", "r": [1.0, 4.62, 2.8, 4.7]}, {"t": "desk", "r": [5.8, 1.75, 6.37, 3.45], "label": "Control"}, {"t": "chair", "r": [5.16, 2.36, 5.64, 2.84]}, {"t": "shelf", "r": [0.25, 10.15, 2.85, 10.55]}, {"t": "desk", "r": [1.15, 12.15, 1.9, 13.75]}, {"t": "chair", "r": [0.48, 12.71, 0.96, 13.19]}, {"t": "chair", "r": [2.11, 12.31, 2.59, 12.79]}, {"t": "chair", "r": [2.11, 13.11, 2.59, 13.59]}, {"t": "plant", "r": [2.93, 13.38, 3.37, 13.82]}, {"t": "counter", "r": [6.45, 10.2, 7.05, 11.45], "label": "Recepci\u00f3n"}, {"t": "counter", "r": [6.45, 10.2, 7.3, 10.7]}, {"t": "chair", "r": [7.18, 10.76, 7.66, 11.24]}, {"t": "logo", "r": [7.7, 10.3, 7.78, 11.25]}, {"t": "sofa", "r": [3.8, 13.42, 5.4, 13.97]}, {"t": "ctable", "r": [4.25, 12.75, 4.95, 13.15]}, {"t": "plant", "r": [5.53, 13.48, 5.97, 13.92]}, {"t": "plant", "r": [3.83, 11.53, 4.27, 11.97]}, {"t": "shelf", "r": [7.4, 5.3, 7.78, 8.45]}, {"t": "shelf", "r": [6.31, 5.3, 6.66, 7.25]}, {"t": "mirror", "r": [6.45, 9.0, 6.55, 9.75]}], "curtains": [[4.82, 4.85, 4.82, 8.8], [3.45, 11.2, 3.45, 13.95], [2.55, 0.18, 4.7, 0.18], [0.18, 12.3, 0.18, 13.95], [0.2, 4.58, 4.85, 4.58], [3.05, 9.82, 4.85, 9.82], [6.45, 5.32, 6.45, 7.35]], "studio": {"common": [{"t": "backdrop", "r": [1.1, 4.82, 3.82, 5.0]}], "foto": [{"t": "sweep", "r": [1.1, 5.0, 3.82, 6.7]}, {"t": "armchair", "r": [1.55, 5.75, 2.15, 6.35]}, {"t": "armchair", "r": [2.8, 5.75, 3.4, 6.35]}, {"t": "ctable", "r": [2.3, 5.85, 2.65, 6.2]}, {"t": "light", "r": [0.35, 5.9, 0.75, 6.3]}, {"t": "light", "r": [4.15, 5.9, 4.55, 6.3]}, {"t": "light", "r": [0.55, 8.0, 0.95, 8.4]}, {"t": "light", "r": [3.95, 8.0, 4.35, 8.4]}, {"t": "cam", "r": [1.4, 8.55, 1.7, 8.85], "a": -90}, {"t": "cam", "r": [2.33, 9.25, 2.63, 9.55], "a": -90}, {"t": "cam", "r": [3.25, 8.55, 3.55, 8.85], "a": -90}, {"t": "cart", "r": [0.1, 8.6, 0.6, 9.8]}], "clase": [{"t": "screen", "r": [1.1, 5.02, 3.82, 5.08]}, {"t": "desk", "r": [1.75, 5.45, 3.15, 6.05], "label": "Profesor"}, {"t": "chair", "r": [2.24, 5.04, 2.66, 5.46]}, {"t": "tchair", "r": [0.75, 6.75, 1.35, 7.35]}, {"t": "tchair", "r": [1.65, 6.75, 2.25, 7.35]}, {"t": "tchair", "r": [2.65, 6.75, 3.25, 7.35]}, {"t": "tchair", "r": [3.55, 6.75, 4.15, 7.35]}, {"t": "tchair", "r": [0.75, 7.85, 1.35, 8.45]}, {"t": "tchair", "r": [1.65, 7.85, 2.25, 8.45]}, {"t": "tchair", "r": [2.65, 7.85, 3.25, 8.45]}, {"t": "tchair", "r": [3.55, 7.85, 4.15, 8.45]}, {"t": "cart", "r": [0.1, 8.6, 0.6, 9.8]}]}, "flow": {"main": [[7.33, 13.85], [6.9, 12.4], [5.61, 11.2], [5.61, 4.05], [5.0, 4.26]], "branches": [{"to": "Estudio", "p": [[5.61, 9.35], [4.85, 9.35]]}, {"to": "Oficina", "p": [[5.61, 10.62], [3.75, 10.62]]}, {"to": "Bodega", "p": [[5.61, 7.82], [6.35, 7.82]]}, {"to": "Ba\u00f1o", "p": [[5.61, 9.55], [6.3, 9.55]]}, {"to": "Ba\u00f1o", "p": [[5.61, 4.65], [6.92, 4.65], [6.92, 4.22]]}]}}, "actual": {"rooms": [{"name": "Espacio abierto", "type": "open", "rects": [[0, 0, 4.71, 1.5], [0, 1.5, 4.71, 3.76], [4.71, 0, 6.37, 1.5], [0, 3.76, 6.37, 4.27], [0, 4.27, 6.21, 8.52], [6.21, 4.27, 7.78, 8.52], [0, 8.52, 6.21, 10.11], [0, 10.11, 7.78, 14.0]], "label_at": [2.6, 6.6], "dims": "7.78 \u00d7 14.00 bruto", "area": 95.8}, {"name": "Nicho / ducto", "type": "service", "rects": [[4.91, 1.7, 6.37, 3.56]], "short": "Nicho", "area": 2.7}, {"name": "Ba\u00f1o 1", "type": "service", "rects": [[6.57, 0, 7.78, 2.05]], "area": 2.5}, {"name": "Ba\u00f1o 2", "type": "service", "rects": [[6.57, 2.25, 7.78, 4.06]], "area": 2.2}, {"name": "Ba\u00f1o Hab. Zoe", "type": "service", "rects": [[6.41, 8.72, 7.78, 9.9]], "short": "Zoe", "area": 1.6}]}};
+const SVGNS = "http://www.w3.org/2000/svg";
+const state = { scen: "prop", view: "2d", mode: "foto", flow: true, ceil: true, sel: "estudio" };
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const TYPE_FILL = { prod: "--prod", work: "--work", serv: "--serv", circ: "--circ", open: "--open" };
+const TYPE_NAME = { prod: "Producción", work: "Trabajo y público", serv: "Servicios", circ: "Circulación", open: "Espacio abierto" };
+
+function el(tag, attrs, parent) {
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function rect(r, attrs, parent) {
+  return el("rect", Object.assign({ x: r[0], y: r[1], width: +(r[2] - r[0]).toFixed(3), height: +(r[3] - r[1]).toFixed(3) }, attrs), parent);
+}
+function txt(x, y, s, attrs, parent) {
+  const t = el("text", Object.assign({ x, y }, attrs), parent);
+  t.textContent = s; return t;
+}
+function rad(a) { return a * Math.PI / 180; }
+
+function furnList() {
+  if (state.scen !== "prop") return [];
+  const p = DATA.prop;
+  return p.furn.concat(p.studio.common, state.mode === "foto" ? p.studio.foto : p.studio.clase);
+}
+
+/* ---------------- PLANO 2D ---------------- */
+function drawPlan() {
+  const svg = document.getElementById("plan");
+  svg.innerHTML = "";
+  const W = DATA.W, D = DATA.D;
+  svg.setAttribute("viewBox", `-1.05 -2.15 ${W + 2.1} ${D + 3.15}`);
+  const C = {
+    ink: css("--ink"), ink2: css("--ink-2"), wall: css("--wall"), wallNew: css("--wall-new"), glass: css("--glass"),
+    accent: css("--accent"), wood: css("--wood"), soft: css("--soft"), green: css("--green"), sheet: css("--sheet"), rule: css("--rule")
+  };
+  const defs = el("defs", {}, svg);
+  const pat = el("pattern", { id: "hatch", width: 0.18, height: 0.18, patternUnits: "userSpaceOnUse", patternTransform: "rotate(45)" }, defs);
+  el("line", { x1: 0, y1: 0, x2: 0, y2: 0.18, stroke: C.soft, "stroke-width": 0.03 }, pat);
+  const mk = el("marker", { id: "arr", viewBox: "0 0 10 10", refX: 7, refY: 5, markerWidth: 5, markerHeight: 5, orient: "auto-start-reverse" }, defs);
+  el("path", { d: "M1 1L8 5L1 9", fill: "none", stroke: C.accent, "stroke-width": 1.6, "stroke-linecap": "round", "stroke-linejoin": "round" }, mk);
+
+  // balcón
+  rect(DATA.balcony, { fill: "url(#hatch)", stroke: "none" }, svg);
+  txt(W / 2, -0.62, "Balcón", { "font-size": 0.24, "text-anchor": "middle", fill: C.ink2, "font-family": "IBM Plex Sans, system-ui, sans-serif" }, svg);
+
+  // recintos
+  const rooms = state.scen === "prop" ? DATA.prop.rooms : DATA.actual.rooms;
+  const gRooms = el("g", {}, svg);
+  rooms.forEach((rm, i) => {
+    const g = el("g", { class: "room", tabindex: 0, role: "button", "aria-label": `${rm.name}, ${rm.area} metros cuadrados`, "data-i": i, style: "cursor:pointer" }, gRooms);
+    rm.rects.forEach(r => rect(r, { fill: css(TYPE_FILL[rm.type] || "--open"), stroke: "none" }, g));
+    const pick = () => { state.sel = rm.id || rm.name; showInfo(rm); highlight(); };
+    g.addEventListener("click", pick);
+    g.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+    g.addEventListener("mouseenter", () => showInfo(rm));
+    g.addEventListener("mouseleave", () => { const s = rooms.find(r => (r.id || r.name) === state.sel); showInfo(s || rooms[0]); });
+  });
+  el("g", { id: "hl" }, svg);
+
+  // mobiliario
+  const gF = el("g", { "pointer-events": "none" }, svg);
+  furnList().forEach(f => drawFurn(f, gF, C));
+  // sanitarios
+  DATA.fixtures.forEach(f => {
+    const r = f.r, cx = (r[0] + r[2]) / 2, cy = (r[1] + r[3]) / 2;
+    if (f.t === "wc") { rect(r, { rx: 0.05, fill: C.sheet, stroke: C.ink2, "stroke-width": 0.02 }, gF); el("ellipse", { cx: cx - 0.04, cy, rx: 0.16, ry: 0.13, fill: "none", stroke: C.ink2, "stroke-width": 0.02 }, gF); }
+    else el("ellipse", { cx, cy, rx: (r[2] - r[0]) / 2, ry: (r[3] - r[1]) / 2, fill: C.sheet, stroke: C.ink2, "stroke-width": 0.02 }, gF);
+  });
+
+  // cortinas
+  if (state.scen === "prop") DATA.prop.curtains.forEach(c => {
+    el("line", { x1: c[0], y1: c[1], x2: c[2], y2: c[3], stroke: C.ink2, "stroke-width": 0.035, "stroke-dasharray": "0.06 0.06" }, svg);
+  });
+
+  // muros
+  const gW = el("g", {}, svg);
+  DATA.existWalls.forEach(r => rect(r, { fill: C.wall }, gW));
+  DATA.glass.forEach(r => rect(r, { fill: C.glass, opacity: 0.9 }, gW));
+  if (state.scen === "prop") DATA.prop.walls.forEach(w => {
+    if (w.k === "glass") {
+      rect(w.r, { fill: C.sheet, stroke: "none" }, gW);
+      const vert = (w.r[3] - w.r[1]) > (w.r[2] - w.r[0]);
+      const mx = (w.r[0] + w.r[2]) / 2, my = (w.r[1] + w.r[3]) / 2;
+      if (vert) el("line", { x1: mx, y1: w.r[1], x2: mx, y2: w.r[3], stroke: C.glass, "stroke-width": 0.05 }, gW);
+      else el("line", { x1: w.r[0], y1: my, x2: w.r[2], y2: my, stroke: C.glass, "stroke-width": 0.05 }, gW);
+    } else rect(w.r, { fill: w.k === "acoustic" ? C.wall : C.wallNew }, gW);
+  });
+  // puertas
+  const doors = DATA.existDoors.concat(state.scen === "prop" ? DATA.prop.doors : []);
+  doors.forEach(d => {
+    const [hx, hy] = d.hinge, r = d.r;
+    const p0 = [hx + r * Math.cos(rad(d.a0)), hy + r * Math.sin(rad(d.a0))];
+    const p1 = [hx + r * Math.cos(rad(d.a1)), hy + r * Math.sin(rad(d.a1))];
+    let diff = ((d.a1 - d.a0) % 360 + 540) % 360 - 180;
+    const sweep = diff > 0 ? 1 : 0;
+    const col = d.glass ? C.glass : C.ink;
+    el("path", { d: `M${p0[0]} ${p0[1]} A${r} ${r} 0 0 ${sweep} ${p1[0]} ${p1[1]}`, fill: "none", stroke: C.ink2, "stroke-width": 0.015, "stroke-dasharray": "0.05 0.04" }, gW);
+    el("line", { x1: hx, y1: hy, x2: p1[0], y2: p1[1], stroke: col, "stroke-width": 0.04 }, gW);
+  });
+
+  // rótulos
+  const gT = el("g", { "pointer-events": "none", "font-family": "IBM Plex Sans, system-ui, sans-serif" }, svg);
+  rooms.forEach(rm => {
+    if (!rm.label_at) return;
+    let [x, y] = rm.label_at;
+    if (rm.label_clase && state.mode === "clase") [x, y] = rm.label_clase;
+    if (rm.vertical) { txt(x, y, `${rm.name} · ${rm.area.toFixed(1)} m²`, { "font-size": 0.19, "text-anchor": "middle", fill: css("--ink-2"), transform: `rotate(-90 ${x} ${y})` }, gT); return; }
+    const small = rm.type === "serv" || rm.type === "circ";
+    const lines = rm.lines || [rm.name];
+    const fs = small ? 0.19 : 0.26;
+    lines.forEach((s, k) => txt(x, y + k * fs * 1.15, s, { "font-size": fs, "font-weight": small ? 400 : 600, "text-anchor": "middle", fill: C.ink }, gT));
+    txt(x, y + lines.length * fs * 1.15 + 0.02, `${rm.area.toFixed(1)} m²`, { "font-size": small ? 0.17 : 0.21, "text-anchor": "middle", fill: C.ink2, "font-family": "IBM Plex Mono, ui-monospace, monospace" }, gT);
+  });
+
+  // cotas generales
+  const gd = el("g", { stroke: C.ink2, "stroke-width": 0.015, fill: C.ink2, "font-family": "IBM Plex Mono, ui-monospace, monospace", "font-size": 0.2 }, svg);
+  el("line", { x1: 0, y1: -1.75, x2: W, y2: -1.75 }, gd);
+  [0, W].forEach(x => el("line", { x1: x, y1: -1.85, x2: x, y2: -1.65 }, gd));
+  txt(W / 2, -1.83, "7.78", { "text-anchor": "middle", stroke: "none" }, gd);
+  el("line", { x1: -0.6, y1: 0, x2: -0.6, y2: D }, gd);
+  [0, D].forEach(y => el("line", { x1: -0.7, y1: y, x2: -0.5, y2: y }, gd));
+  const tv = txt(-0.68, D / 2, "14.00", { "text-anchor": "middle", stroke: "none", transform: `rotate(-90 -0.68 ${D / 2})` }, gd);
+  // norte
+  const gn = el("g", { transform: `translate(${W + 0.62} -1.6)` }, svg);
+  el("path", { d: "M0 -0.32 L0.16 0.18 L0 0.08 L-0.16 0.18 Z", fill: C.ink }, gn);
+  txt(0, 0.48, "N", { "font-size": 0.22, "text-anchor": "middle", fill: C.ink, "font-family": "IBM Plex Mono, ui-monospace, monospace" }, gn);
+  // entrada
+  txt(7.33, D + 0.62, "Entrada", { "font-size": 0.22, "text-anchor": "middle", fill: C.accent, "font-family": "IBM Plex Sans, system-ui, sans-serif", "font-weight": 600 }, svg);
+
+  // recorridos
+  if (state.scen === "prop" && state.flow) {
+    const gf = el("g", { fill: "none", stroke: C.accent, "stroke-linecap": "round", "stroke-linejoin": "round", "pointer-events": "none" }, svg);
+    const pl = pts => pts.map(p => p.join(",")).join(" ");
+    el("polyline", { points: pl([[7.33, D + 0.35]].concat(DATA.prop.flow.main)), "stroke-width": 0.07, "marker-end": "url(#arr)" }, gf);
+    DATA.prop.flow.branches.forEach(b => {
+      el("polyline", { points: pl(b.p), "stroke-width": 0.045, "stroke-dasharray": "0.12 0.08", "marker-end": "url(#arr)" }, gf);
+    });
+  }
+  highlight();
+}
+
+function drawFurn(f, g, C) {
+  const r = f.r, w = r[2] - r[0], h = r[3] - r[1], cx = r[0] + w / 2, cy = r[1] + h / 2;
+  const sw = 0.018, st = C.ink2;
+  switch (f.t) {
+    case "desk": case "counter": case "table": rect(r, { fill: C.wood, stroke: st, "stroke-width": sw }, g); break;
+    case "chair": case "tchair": rect(r, { rx: 0.08, fill: C.sheet, stroke: st, "stroke-width": sw }, g);
+      if (f.t === "tchair") rect([r[2] - 0.2, r[1] + 0.05, r[2] - 0.02, r[1] + 0.3], { fill: C.wood, stroke: st, "stroke-width": sw }, g); break;
+    case "armchair": rect(r, { rx: 0.12, fill: C.soft, stroke: st, "stroke-width": sw }, g); break;
+    case "sofa": rect(r, { rx: 0.08, fill: C.soft, stroke: st, "stroke-width": sw }, g); rect([r[0], r[3] - 0.18, r[2], r[3]], { fill: C.wallNew, opacity: .35 }, g); break;
+    case "ctable": rect(r, { rx: 0.04, fill: C.wood, stroke: st, "stroke-width": sw }, g); break;
+    case "round": el("circle", { cx, cy, r: w / 2, fill: C.wood, stroke: st, "stroke-width": sw }, g); break;
+    case "shelf": case "cart": rect(r, { fill: "url(#hatch)", stroke: st, "stroke-width": sw }, g); break;
+    case "plant": el("circle", { cx, cy, r: w / 2, fill: C.green, opacity: .8 }, g); break;
+    case "riser": rect(r, { fill: "none", stroke: C.accent, "stroke-width": 0.025, "stroke-dasharray": "0.08 0.05" }, g); break;
+    case "drums": [[0.3, 0.75, 0.32], [0.62, 0.3, 0.2], [0.95, 0.35, 0.2], [1.0, 0.85, 0.24], [0.2, 0.25, 0.16], [1.1, 0.12, 0.16]].forEach(([dx, dy, rr]) =>
+      el("circle", { cx: r[0] + dx, cy: r[1] + dy * h / 1.2 + 0.05, r: rr, fill: C.sheet, stroke: st, "stroke-width": sw }, g)); break;
+    case "keys": rect(r, { fill: C.ink, opacity: .85 }, g); for (let y = r[1] + 0.06; y < r[3]; y += 0.07) el("line", { x1: r[0] + 0.18, y1: y, x2: r[2], y2: y, stroke: C.sheet, "stroke-width": 0.012 }, g); break;
+    case "amp": rect(r, { fill: C.ink, opacity: .7 }, g); break;
+    case "panel": rect(r, { fill: C.ink, opacity: .55 }, g); break;
+    case "backdrop": rect(r, { fill: C.sheet, stroke: C.ink, "stroke-width": 0.03 }, g); break;
+    case "sweep": rect(r, { fill: C.sheet, stroke: C.ink2, "stroke-width": 0.012, "stroke-dasharray": "0.05 0.05" }, g); break;
+    case "screen": case "logo": rect(r, { fill: C.accent }, g); break;
+    case "mirror": rect(r, { fill: C.glass, opacity: .7 }, g); break;
+    case "light": el("circle", { cx, cy, r: 0.13, fill: C.accent, opacity: .9 }, g); el("circle", { cx, cy, r: 0.21, fill: "none", stroke: C.accent, "stroke-width": 0.015 }, g); break;
+    case "cam": {
+      const a = rad(f.a), L = 0.55, s = 0.35;
+      const p1 = [cx + L * Math.cos(a - s), cy + L * Math.sin(a - s)], p2 = [cx + L * Math.cos(a + s), cy + L * Math.sin(a + s)];
+      el("path", { d: `M${cx} ${cy} L${p1[0]} ${p1[1]} L${p2[0]} ${p2[1]} Z`, fill: C.accent, opacity: .18 }, g);
+      rect([cx - 0.11, cy - 0.11, cx + 0.11, cy + 0.11], { rx: 0.03, fill: C.ink }, g); break;
+    }
+    default: rect(r, { fill: C.soft, stroke: st, "stroke-width": sw }, g);
+  }
+  if (f.label) txt(cx, cy + 0.05, f.label, { "font-size": 0.14, "text-anchor": "middle", fill: C.ink, "font-family": "IBM Plex Sans, system-ui, sans-serif", transform: h > w * 1.8 ? `rotate(-90 ${cx} ${cy + 0.05})` : "" }, g);
+}
+
+function highlight() {
+  const hl = document.getElementById("hl"); if (!hl) return;
+  hl.innerHTML = "";
+  const rooms = state.scen === "prop" ? DATA.prop.rooms : DATA.actual.rooms;
+  const rm = rooms.find(r => (r.id || r.name) === state.sel);
+  if (!rm) return;
+  rm.rects.forEach(r => rect(r, { fill: css("--accent"), opacity: 0.12 }, hl));
+}
+
+function showInfo(rm) {
+  if (!rm) return;
+  const box = document.getElementById("info");
+  box.innerHTML = `<div class="lbl">${TYPE_NAME[rm.type] || ""}</div><h3>${rm.name}</h3><div class="area">${rm.area.toFixed(1)} m²</div>` +
+    (rm.uses ? `<p>${rm.uses}</p>` : "") + (rm.enc && rm.enc !== "—" ? `<p><b style="color:var(--ink);font-weight:500">Cerramiento:</b> ${rm.enc}</p>` : "");
+}
+
+function drawLegend() {
+  const items = [["--prod", "Producción: música, podcast, fotos"], ["--work", "Trabajo y público"], ["--serv", "Servicios"]];
+  let h = items.map(([v, s]) => `<div><span class="sw" style="background:var(${v})"></span>${s}</div>`).join("");
+  h += `<div><span class="sw" style="background:var(--wall)"></span>Muro existente</div>`;
+  h += `<div><span class="sw" style="background:var(--sheet);border:0;border-top:3px solid var(--glass)"></span>División nueva de vidrio hasta la losa</div>`;
+  h += `<div><span class="sw" style="border:0;border-top:2px dotted var(--ink-2)"></span>Cortina acústica negra</div>`;
+  h += `<div><span class="sw" style="border:0;border-top:3px solid var(--accent)"></span>Recorrido desde la entrada</div>`;
+  h += `<div><span class="dot" style="background:var(--accent)"></span>Luz de estudio <span class="dot" style="background:var(--ink);border-radius:2px;margin-left:10px"></span>Cámara</div>`;
+  document.getElementById("legend").innerHTML = h;
+}
+
+function drawTable() {
+  const rooms = state.scen === "prop" ? DATA.prop.rooms : DATA.actual.rooms;
+  let tot = 0;
+  let h = `<thead><tr><th>Espacio</th><th style="text-align:right">Área</th><th>Uso</th><th>Cerramiento</th></tr></thead><tbody>`;
+  rooms.forEach(rm => { tot += rm.area; h += `<tr><td>${rm.name}</td><td class="num">${rm.area.toFixed(1)} m²</td><td>${rm.uses || "—"}</td><td>${rm.enc || "Existente"}</td></tr>`; });
+  h += `</tbody><tfoot><tr><td>Total útil</td><td class="num">${tot.toFixed(1)} m²</td><td colspan="2" style="font-weight:400;color:var(--ink-2)">El resto, hasta ≈ 109 m², son muros y tabiques. El balcón (7.8 m²) va aparte.</td></tr></tfoot>`;
+  document.getElementById("tbl").innerHTML = h;
+}
+
+const DAYS = [
+  { id: "foto", t: "Día de fotos y entrevistas", d: "El estudio arma el fondo de papel y dos sillones frente a tres cámaras. La gente se cambia en el baño de maquillaje y espera en el lobby." },
+  { id: "clase", t: "Día de clases", d: "Las 8 sillas con paleta salen de la bodega y miran a la pantalla sobre el muro norte. El profesor usa la mesa al frente." },
+  { id: "musica", t: "Día de música y podcast", d: "La sala de música trabaja con la puerta cerrada: batería en la tarima, teclado al oeste y la mesa redonda de podcast con tres micrófonos." },
+];
+function drawDays() {
+  const box = document.getElementById("days");
+  box.innerHTML = DAYS.map(d => `<button data-d="${d.id}" aria-pressed="${(d.id === state.mode && d.id !== "musica") || (d.id === "musica" && state.sel === "musica")}"><b>${d.t}</b><span>${d.d}</span></button>`).join("");
+  box.querySelectorAll("button").forEach(b => b.addEventListener("click", () => {
+    const id = b.dataset.d;
+    state.scen = "prop";
+    if (id === "musica") state.sel = "musica"; else { state.mode = id; state.sel = "estudio"; }
+    syncUI(); render();
+    document.querySelector(".viewer").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }));
+}
+
+function syncUI() {
+  const set = (id, on) => document.getElementById(id).setAttribute("aria-pressed", on);
+  set("sc-prop", state.scen === "prop"); set("sc-act", state.scen === "actual");
+  set("v-2d", state.view === "2d"); set("v-3d", state.view === "3d");
+  set("m-foto", state.mode === "foto"); set("m-clase", state.mode === "clase");
+  document.getElementById("modeseg").style.display = state.scen === "prop" ? "" : "none";
+  document.getElementById("flow").parentElement.style.display = state.scen === "prop" && state.view === "2d" ? "" : "none";
+  document.getElementById("ceilwrap").style.display = state.view === "3d" ? "" : "none";
+  document.getElementById("plan").style.display = state.view === "2d" ? "block" : "none";
+  document.getElementById("three").style.display = state.view === "3d" ? "block" : "none";
+}
+
+function render() {
+  drawPlan(); drawTable(); drawDays();
+  const rooms = state.scen === "prop" ? DATA.prop.rooms : DATA.actual.rooms;
+  showInfo(rooms.find(r => (r.id || r.name) === state.sel) || rooms[0]);
+  if (state.view === "3d" && window.build3D) window.build3D();
+}
+
+document.getElementById("sc-prop").onclick = () => { state.scen = "prop"; state.sel = "estudio"; syncUI(); render(); };
+document.getElementById("sc-act").onclick = () => { state.scen = "actual"; state.sel = "Espacio abierto"; syncUI(); render(); };
+document.getElementById("v-2d").onclick = () => { state.view = "2d"; syncUI(); render(); };
+document.getElementById("v-3d").onclick = () => { state.view = "3d"; syncUI(); render(); };
+document.getElementById("m-foto").onclick = () => { state.mode = "foto"; syncUI(); render(); };
+document.getElementById("m-clase").onclick = () => { state.mode = "clase"; syncUI(); render(); };
+document.getElementById("flow").onchange = e => { state.flow = e.target.checked; drawPlan(); };
+document.getElementById("ceil").onchange = e => { state.ceil = e.target.checked; if (window.build3D) window.build3D(); };
+try { matchMedia("(prefers-color-scheme: dark)").addEventListener("change", render); } catch (e) {}
+new MutationObserver(render).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+drawLegend(); syncUI(); render();
+const RENDERS = [
+  ["01-lobby.jpg", "Lobby y recepción", "Mostrador en la esquina noreste; vidrio hacia el estudio."],
+  ["02-oficina.jpg", "Oficina", "Divisiones de vidrio y la única ventana del local."],
+  ["03-pasillo.jpg", "Pasillo central", "Estudio a la izquierda, bodega y baño a la derecha."],
+  ["04-estudio.jpg", "Estudio y set de entrevistas", "Fondo de papel, sillones, cámaras y luces."],
+  ["05-musica.jpg", "Sala de música", "Batería electrónica sobre tarima junto al balcón."],
+  ["06-podcast.jpg", "Set de podcast", "Mesa redonda con tres puestos y dos cámaras."],
+];
+(function () {
+  const g = document.getElementById("gallery"), lb = document.getElementById("lb");
+  g.innerHTML = RENDERS.map(([f, t, d], i) => `<figure><button data-i="${i}" aria-label="Ampliar ${t}"><img src="renders/${f}" alt="${t}: ${d}" loading="lazy" width="1920" height="1080"></button><figcaption>${t}<span>${d}</span></figcaption></figure>`).join("");
+  const open = i => { const [f, t, d] = RENDERS[i]; document.getElementById("lbimg").src = "renders/" + f; document.getElementById("lbimg").alt = t; document.getElementById("lbcap").textContent = t + " · " + d; lb.hidden = false; document.getElementById("lbx").focus(); };
+  g.querySelectorAll("button").forEach(b => b.addEventListener("click", () => open(+b.dataset.i)));
+  const close = () => { lb.hidden = true; };
+  document.getElementById("lbx").onclick = close;
+  lb.addEventListener("click", e => { if (e.target === lb) close(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !lb.hidden) close(); });
+})();
+
+</script>
+
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+const host = document.getElementById("three");
+let renderer, scene, camera, controls, root, inited = false;
+const H = 3.5, W = DATA.W, D = DATA.D;
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const P = (x, y) => [x - W / 2, y - D / 2];
+
+function init() {
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  host.prepend(renderer.domElement);
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(42, 1, 0.05, 200);
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.maxPolarAngle = Math.PI * 0.495;
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x9a9a90, 1.7));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.6);
+  sun.position.set(-6, 14, -10); sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048);
+  Object.assign(sun.shadow.camera, { left: -10, right: 10, top: 10, bottom: -10 });
+  scene.add(sun);
+  const views = { "Isométrica": [[9, 13, 12], [0, 0.6, 0]], "Planta": [[0, 22, 0.01], [0, 0, 0]], "Lobby y estudio": [[...P(8.6, 16.2)].flatMap((v, i) => i === 0 ? [v, 6.0] : [v]), [...P(3.6, 9.4)].flatMap((v, i) => i === 0 ? [v, 0.3] : [v])], "Set del estudio": [[...P(2.48, 9.85)].flatMap((v, i) => i === 0 ? [v, 2.3] : [v]), [...P(2.48, 5.3)].flatMap((v, i) => i === 0 ? [v, 1.0] : [v])], "Sala de música": [[...P(7.4, 6.6)].flatMap((v, i) => i === 0 ? [v, 6.2] : [v]), [...P(2.2, 2.2)].flatMap((v, i) => i === 0 ? [v, 0.3] : [v])] };
+  const vb = document.getElementById("views3d");
+  Object.entries(views).forEach(([n, [pos, tgt]]) => {
+    const b = document.createElement("button"); b.textContent = n;
+    b.onclick = () => { camera.position.set(...pos); controls.target.set(...tgt); controls.update(); };
+    vb.appendChild(b);
+  });
+  camera.position.set(9, 13, 12); controls.target.set(0, 0.6, 0);
+  new ResizeObserver(resize).observe(host);
+  resize();
+  setupNav();
+  let last = performance.now();
+  (function loop(now) {
+    requestAnimationFrame(loop);
+    now = now || performance.now();
+    const dt = Math.min(0.05, (now - last) / 1000); last = now;
+    if (host.style.display === "none") return;
+    if (nav.mode === "orbit") controls.update(); else if (nav.mode === "walk") stepWalk(dt); else stepTour(dt);
+    renderer.render(scene, camera);
+  })();
+  inited = true;
+}
+
+/* ---------- navegación: caminar y recorrido guiado ---------- */
+const nav = { mode: "orbit", x: 7.3, y: 13.4, yaw: -Math.PI / 2, pitch: 0, keys: {}, tourT: 0, tourPlaying: false };
+const EYE = 1.65, RAD = 0.22;
+function solids() {
+  const s = DATA.existWalls.concat(DATA.glass);
+  if (state.scen === "prop") DATA.prop.walls.forEach(w => s.push(w.r));
+  return s;
+}
+function blocked(x, y) {
+  if (x < 0.05 || x > W - 0.05 || y < -1.15 || y > D - 0.05) return true;
+  return solids().some(r => x > r[0] - RAD && x < r[2] + RAD && y > r[1] - RAD && y < r[3] + RAD);
+}
+function placeCam(x, y, yaw, pitch, h = EYE) {
+  const [px, pz] = P(x, y);
+  camera.position.set(px, h, pz);
+  const cp = Math.cos(pitch);
+  camera.lookAt(px + Math.cos(yaw) * cp, h + Math.sin(pitch), pz + Math.sin(yaw) * cp);
+}
+function stepWalk(dt) {
+  const k = nav.keys, sp = (k.shift ? 2.6 : 1.5) * dt, turn = 1.8 * dt;
+  if (k.l) nav.yaw -= turn; if (k.r) nav.yaw += turn;
+  let f = (k.f ? 1 : 0) - (k.b ? 1 : 0), s = (k.sr ? 1 : 0) - (k.sl ? 1 : 0);
+  if (f || s) {
+    const dx = (Math.cos(nav.yaw) * f - Math.sin(nav.yaw) * s) * sp, dy = (Math.sin(nav.yaw) * f + Math.cos(nav.yaw) * s) * sp;
+    if (!blocked(nav.x + dx, nav.y)) nav.x += dx;
+    if (!blocked(nav.x, nav.y + dy)) nav.y += dy;
+  }
+  placeCam(nav.x, nav.y, nav.yaw, nav.pitch);
+}
+// recorrido: [x, y, mirar x, mirar y, título, descripción] ; título null = punto de paso
+const TOUR = [
+  [7.33, 13.65, 6.2, 11.6, "Entrada", "Llegas por la esquina sureste del local."],
+  [6.7, 13.0, 4.3, 11.5, "Lobby y recepción", "Mostrador en la esquina, con el logo detrás; sofá de espera junto a la oficina."],
+  [5.7, 11.6, 1.8, 12.9, "Oficina de vidrio", "Separada del lobby con vidrio y cortina; tiene la única ventana."],
+  [5.61, 10.45, 5.61, 5.5, "Pasillo central", "Une el lobby con todas las áreas. Ancho libre 1.20 m."],
+  [5.45, 9.35, 2.4, 5.6, "Estudio multipropósito", "Vidrio hacia el pasillo, con cortina negra para las sesiones."],
+  [2.48, 8.25, 2.48, 5.0, "Set de fotos y entrevistas", "Fondo de papel de 2.72 m, dos sillones, tres cámaras y cuatro luces."],
+  [4.3, 9.35, 5.61, 9.35, null],
+  [5.61, 9.2, 5.61, 7.8, null],
+  [5.61, 7.82, 5.61, 5.0, null],
+  [5.61, 4.75, 5.0, 4.26, null],
+  [5.3, 4.26, 2.0, 2.8, "Sala de música y podcast", "Puerta acústica con sellos y muros hasta la losa."],
+  [3.9, 4.0, 1.65, 3.45, "Set de podcast", "Mesa redonda con tres puestos y dos cámaras."],
+  [2.1, 2.4, 3.6, 0.6, "Batería y balcón", "Tarima aislada junto a la vidriera, con cortina blackout."],
+  [5.3, 0.6, 5.9, 2.6, "Rincón de control", "Mesa de edición en el nicho, junto a la sala."],
+];
+const segs = [];
+(function buildTour() {
+  let t = 0;
+  for (let i = 0; i < TOUR.length; i++) {
+    const p = TOUR[i];
+    if (i > 0) {
+      const q = TOUR[i - 1], dur = Math.max(1.6, Math.hypot(p[0] - q[0], p[1] - q[1]) / 0.9);
+      segs.push({ a: q, b: p, t0: t, t1: t + dur, move: true }); t += dur;
+    }
+    if (p[4]) { segs.push({ a: p, b: p, t0: t, t1: t + 2.6, move: false, cap: p }); t += 2.6; }
+  }
+  segs.total = t;
+})();
+const ease = u => u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+function stepTour(dt) {
+  if (nav.tourPlaying) nav.tourT += dt;
+  if (nav.tourT >= segs.total) { nav.tourT = segs.total - 0.001; nav.tourPlaying = false; tourBtn(); }
+  const sgm = segs.find(s => nav.tourT >= s.t0 && nav.tourT < s.t1) || segs[segs.length - 1];
+  const u = ease((nav.tourT - sgm.t0) / (sgm.t1 - sgm.t0));
+  const L = (i) => sgm.a[i] + (sgm.b[i] - sgm.a[i]) * u;
+  const x = L(0), y = L(1), lx = L(2), ly = L(3);
+  nav.x = x; nav.y = y; nav.yaw = Math.atan2(ly - y, lx - x); nav.pitch = -0.06;
+  placeCam(x, y, nav.yaw, nav.pitch);
+  let capP = null;
+  for (const s of segs) { if (s.t0 > nav.tourT) break; if (s.cap) capP = s.cap; }
+  if (capP && capP !== nav.lastCap) { nav.lastCap = capP; showCap(capP[4], capP[5]); }
+}
+function showCap(t, d) { const c = document.getElementById("cap3d"); c.hidden = false; document.getElementById("capT").textContent = t; document.getElementById("capD").textContent = d; }
+function tourBtn() { document.getElementById("n-tour").textContent = nav.tourPlaying ? "Pausar recorrido" : (nav.tourT > 0 && nav.tourT < segs.total - 0.01 ? "Seguir recorrido" : "Recorrido guiado"); }
+function setMode(m) {
+  if (m === "tour" && nav.mode === "tour") { nav.tourPlaying = !nav.tourPlaying; if (nav.tourT >= segs.total - 0.01) { nav.tourT = 0; nav.tourPlaying = true; } tourBtn(); return; }
+  nav.mode = m;
+  controls.enabled = m === "orbit";
+  camera.fov = m === "orbit" ? 42 : 68; camera.updateProjectionMatrix();
+  ["orbit", "walk", "tour"].forEach(k => document.getElementById("n-" + k).setAttribute("aria-pressed", k === m));
+  document.getElementById("views3d").hidden = m !== "orbit";
+  document.getElementById("dpad").hidden = m !== "walk";
+  document.getElementById("cap3d").hidden = m !== "tour";
+  document.getElementById("hint3d").textContent = m === "orbit" ? "Arrastra para girar · rueda para acercar" : m === "walk" ? "W A S D o flechas para moverte · arrastra para mirar · Mayús para ir rápido" : "El recorrido va de la entrada hacia adentro";
+  if (m === "walk") { nav.x = 7.3; nav.y = 13.4; nav.yaw = -Math.PI / 2 - 0.35; nav.pitch = 0; }
+  if (m === "tour") { nav.tourT = 0; nav.tourPlaying = true; nav.lastCap = null; if (!state.ceil) { state.ceil = true; document.getElementById("ceil").checked = true; window.build3D(); } }
+  if (m === "orbit") { nav.tourPlaying = false; camera.position.set(9, 13, 12); controls.target.set(0, 0.6, 0); controls.update(); }
+  tourBtn();
+}
+function setupNav() {
+  document.getElementById("n-orbit").onclick = () => setMode("orbit");
+  document.getElementById("n-walk").onclick = () => setMode("walk");
+  document.getElementById("n-tour").onclick = () => setMode("tour");
+  const map = { KeyW: "f", ArrowUp: "f", KeyS: "b", ArrowDown: "b", ArrowLeft: "l", ArrowRight: "r", KeyA: "sl", KeyD: "sr", ShiftLeft: "shift", ShiftRight: "shift" };
+  window.addEventListener("keydown", e => { if (nav.mode !== "walk" || host.style.display === "none") return; const k = map[e.code]; if (k) { nav.keys[k] = true; e.preventDefault(); } });
+  window.addEventListener("keyup", e => { const k = map[e.code]; if (k) nav.keys[k] = false; });
+  window.addEventListener("blur", () => { nav.keys = {}; });
+  const cv = renderer.domElement; let drag = null;
+  cv.addEventListener("pointerdown", e => { if (nav.mode !== "walk") return; drag = [e.clientX, e.clientY]; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener("pointermove", e => { if (!drag || nav.mode !== "walk") return; nav.yaw += (e.clientX - drag[0]) * 0.005; nav.pitch = Math.max(-0.9, Math.min(0.9, nav.pitch - (e.clientY - drag[1]) * 0.004)); drag = [e.clientX, e.clientY]; });
+  cv.addEventListener("pointerup", () => { drag = null; });
+  document.querySelectorAll("#dpad button").forEach(b => {
+    const k = b.dataset.k;
+    b.addEventListener("pointerdown", e => { e.preventDefault(); nav.keys[k] = true; });
+    ["pointerup", "pointerleave", "pointercancel"].forEach(ev => b.addEventListener(ev, () => { nav.keys[k] = false; }));
+  });
+  window.__studio3d = { nav, setMode, placeCam, segs, camera };
+  // luces interiores cálidas para recorrer por dentro
+  [[2.4, 2.4], [2.4, 7.3], [1.8, 12.0], [5.9, 12.2], [5.61, 6.5]].forEach(([x, y]) => {
+    const l = new THREE.PointLight(0xffe2b8, 6, 7, 1.6); const [px, pz] = P(x, y); l.position.set(px, 2.9, pz); scene.add(l);
+  });
+}
+function resize() {
+  const w = host.clientWidth || 800, h = host.clientHeight || 600;
+  renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+const mat = (c, o = {}) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.85 }, o));
+function box(r, y0, y1, m, parent, cast = true) {
+  const w = Math.max(0.01, r[2] - r[0]), d = Math.max(0.01, r[3] - r[1]), h = Math.max(0.005, y1 - y0);
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
+  const [x, z] = P((r[0] + r[2]) / 2, (r[1] + r[3]) / 2);
+  mesh.position.set(x, y0 + h / 2, z); mesh.castShadow = cast; mesh.receiveShadow = true;
+  parent.add(mesh); return mesh;
+}
+function cyl(x, y, rad, y0, y1, m, parent, seg = 20) {
+  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad, y1 - y0, seg), m);
+  const [px, pz] = P(x, y); mesh.position.set(px, (y0 + y1) / 2, pz); mesh.castShadow = true; parent.add(mesh); return mesh;
+}
+function pipe(a, b, y, rad, m, parent) {
+  const [ax, az] = P(...a), [bx, bz] = P(...b);
+  const len = Math.hypot(bx - ax, bz - az);
+  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad, len, 16), m);
+  mesh.position.set((ax + bx) / 2, y, (az + bz) / 2);
+  mesh.rotation.z = Math.PI / 2; mesh.rotation.y = -Math.atan2(bz - az, bx - ax);
+  parent.add(mesh); return mesh;
+}
+
+window.build3D = function () {
+  if (!inited) init();
+  if (root) { scene.remove(root); root.traverse(o => { if (o.geometry) o.geometry.dispose(); }); }
+  root = new THREE.Group(); scene.add(root);
+  scene.background = new THREE.Color(css("--bg3d"));
+  const prop = state.scen === "prop";
+  const M = {
+    floor: mat(0x9a9890, { roughness: 0.6 }), wall: mat(0xf1f0ec), wallAc: mat(0x3a3d41), wallNew: mat(0xe6e5e0),
+    glass: new THREE.MeshPhysicalMaterial({ color: 0xbfd6f2, transparent: true, opacity: 0.22, roughness: 0.05, metalness: 0, side: THREE.DoubleSide, depthWrite: false }),
+    wood: mat(0xb88d5c, { roughness: 0.6 }), dark: mat(0x232528), soft: mat(0x8d9096), white: mat(0xfafafa), accent: mat(0xe0a03a, { emissive: 0x6b4300, emissiveIntensity: 0.4 }),
+    green: mat(0x5f8a4e), duct: mat(0x2a2c2f, { metalness: 0.6, roughness: 0.4 }), ceil: mat(0x111214), balc: mat(0xbdbbb4), curtain: mat(0x18191b, { roughness: 1 })
+  };
+  const tint = { prod: 0xd7c4a2, work: 0xb5c3d6, serv: 0xc9c9c4, circ: 0xd9d8d2, open: 0xc4c2bb };
+  // piso
+  box([-0.2, -1.4, W + 0.2, D + 0.2], -0.06, 0, M.floor, root, false);
+  const rooms = prop ? DATA.prop.rooms : DATA.actual.rooms;
+  rooms.forEach(rm => rm.rects.forEach(r => box(r, 0, 0.012, mat(tint[rm.type] || 0xcccccc, { roughness: 0.7 }), root, false)));
+  box(DATA.balcony, 0, 0.02, M.balc, root, false);
+  // muros existentes (el muro exterior del balcón es baranda)
+  DATA.existWalls.forEach((r, i) => {
+    const isRail = r[1] <= -1.39 && r[3] <= -1.19;
+    box(r, 0, isRail ? 1.1 : H, M.wall, root);
+  });
+  // dinteles sobre vanos de puertas existentes y vidrios
+  DATA.existDoors.forEach(d => box(d.gap, 2.2, H, M.wall, root));
+  DATA.glass.forEach(r => box(r, 0, H, M.glass, root, false));
+  box([1.53, -0.2, 2.53, 0], 2.25, H, M.wall, root);
+  // sanitarios
+  DATA.fixtures.forEach(f => box(f.r, 0, f.t === "wc" ? 0.42 : 0.86, M.white, root));
+  if (prop) {
+    DATA.prop.walls.forEach(w => {
+      if (w.k === "glass") { box(w.r, 0, H, M.glass, root, false); box(w.r, 0, 0.06, M.dark, root); box(w.r, H - 0.06, H, M.dark, root); }
+      else box(w.r, 0, H, w.k === "acoustic" ? M.wallAc : M.wallNew, root);
+    });
+    DATA.prop.doors.forEach(d => box(d.gap, 2.2, H, d.glass ? M.glass : M.wallNew, root, false));
+    // cortinas recogidas (solo una franja junto al vidrio)
+    DATA.prop.curtains.forEach(c => {
+      const vert = Math.abs(c[2] - c[0]) < 0.01;
+      const r = vert ? [c[0] - 0.04, c[1], c[0] + 0.04, c[1] + 0.6] : [c[0], c[1] - 0.04, c[0] + 0.6, c[1] + 0.04];
+      box(r, 0.02, H - 0.15, M.curtain, root);
+    });
+    const furn = DATA.prop.furn.concat(DATA.prop.studio.common, state.mode === "foto" ? DATA.prop.studio.foto : DATA.prop.studio.clase);
+    furn.forEach(f => furn3D(f, M, root));
+    if (state.ceil) ceiling(M, root);
+  }
+};
+
+function furn3D(f, M, g) {
+  const r = f.r, cx = (r[0] + r[2]) / 2, cy = (r[1] + r[3]) / 2, w = r[2] - r[0];
+  switch (f.t) {
+    case "desk": case "table": box(r, 0.72, 0.76, M.wood, g); box([r[0] + 0.05, r[1] + 0.05, r[0] + 0.1, r[3] - 0.05], 0, 0.72, M.dark, g); box([r[2] - 0.1, r[1] + 0.05, r[2] - 0.05, r[3] - 0.05], 0, 0.72, M.dark, g); break;
+    case "counter": box(r, 0, 0.9, M.wood, g); break;
+    case "chair": case "tchair": box(r, 0.42, 0.48, M.dark, g); cyl(cx, cy, 0.03, 0, 0.42, M.dark, g, 8); box([r[0], r[1], r[0] + 0.06, r[3]], 0.48, 0.9, M.dark, g); break;
+    case "armchair": box(r, 0, 0.45, M.soft, g); box([r[0], r[1], r[2], r[1] + 0.12], 0.45, 0.85, M.soft, g); break;
+    case "sofa": box(r, 0, 0.42, M.soft, g); box([r[0], r[3] - 0.18, r[2], r[3]], 0.42, 0.82, M.soft, g); break;
+    case "ctable": box(r, 0, 0.4, M.wood, g); break;
+    case "round": cyl(cx, cy, w / 2, 0.72, 0.76, M.wood, g, 40); cyl(cx, cy, 0.06, 0, 0.72, M.dark, g, 10); break;
+    case "shelf": box(r, 0, 2.1, M.wood, g); break;
+    case "cart": box(r, 0, 1.0, M.soft, g); break;
+    case "plant": cyl(cx, cy, 0.16, 0, 0.4, M.dark, g, 16); { const s = new THREE.Mesh(new THREE.SphereGeometry(0.32, 16, 12), M.green); const [x, z] = P(cx, cy); s.position.set(x, 0.85, z); s.castShadow = true; g.add(s); } break;
+    case "riser": box(r, 0, 0.25, M.dark, g); break;
+    case "drums": [[0.3, 0.75, 0.32, 0.55], [0.62, 0.3, 0.2, 0.75], [0.95, 0.35, 0.2, 0.75], [1.0, 0.85, 0.24, 0.6], [0.2, 0.25, 0.16, 1.15], [1.1, 0.12, 0.16, 1.2]].forEach(([dx, dy, rr, hh]) =>
+      cyl(r[0] + dx, r[1] + dy + 0.05, rr, 0.25, 0.25 + hh, M.soft, g, 20)); break;
+    case "keys": box(r, 0.75, 0.88, M.dark, g); box([r[0] + 0.05, r[1] + 0.1, r[0] + 0.1, r[3] - 0.1], 0, 0.75, M.dark, g); break;
+    case "amp": box(r, 0, 0.6, M.dark, g); break;
+    case "panel": box(r, 0.9, 2.4, M.dark, g); break;
+    case "backdrop": box(r, 0, 2.9, M.white, g); box([r[0] - 0.1, r[1], r[2] + 0.1, r[3]], 2.9, 3.0, M.dark, g); break;
+    case "sweep": box(r, 0.012, 0.03, M.white, g, false); break;
+    case "screen": box(r, 1.0, 2.7, M.white, g); break;
+    case "logo": box(r, 1.2, 2.4, M.accent, g); break;
+    case "mirror": box(r, 1.0, 2.0, M.glass, g); break;
+    case "light": cyl(cx, cy, 0.02, 0, 2.0, M.dark, g, 8); { const s = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.4, 0.2), M.white); const [x, z] = P(cx, cy); s.position.set(x, 2.0, z); g.add(s); } break;
+    case "cam": cyl(cx, cy, 0.02, 0, 1.45, M.dark, g, 8); { const a = f.a * Math.PI / 180, s = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.15, 0.14), M.dark); const [x, z] = P(cx, cy); s.position.set(x, 1.52, z); s.rotation.y = -a; g.add(s); } break;
+    default: box(r, 0, 0.8, M.soft, g);
+  }
+}
+
+function ceiling(M, g) {
+  // losa negra (se ve desde adentro) + ductos y parrillas
+  const slab = new THREE.Mesh(new THREE.PlaneGeometry(W + 0.4, D + 1.6), M.ceil);
+  slab.rotation.x = Math.PI / 2; slab.position.set(0, H + 0.001, -0.6);
+  g.add(slab);
+  const y = 3.15;
+  pipe([5.61, 0.6], [5.61, 13.4], y, 0.17, M.duct, g);
+  [[[5.61, 2.3], [1.6, 2.3]], [[5.61, 7.3], [1.4, 7.3]], [[5.61, 12.0], [1.4, 12.0]], [[5.61, 12.6], [7.1, 12.6]], [[5.61, 6.8], [7.1, 6.8]]].forEach(([a, b]) => pipe(a, b, y + 0.02, 0.1, M.duct, g));
+  // parrillas de tubo
+  const grid = (x0, y0, x1, y1) => {
+    const gy = 3.0;
+    [[x0, y0, x1, y0], [x0, y1, x1, y1], [x0, y0, x0, y1], [x1, y0, x1, y1], [(x0 + x1) / 2, y0, (x0 + x1) / 2, y1]].forEach(([a, b, c, d]) => pipe([a, b], [c, d], gy, 0.025, M.dark, g));
+  };
+  grid(0.6, 5.4, 4.3, 9.4); grid(0.5, 0.6, 4.2, 4.1);
+  // luces de riel en lobby y oficina
+  [[4.6, 12.2], [6.2, 12.2], [6.2, 13.2], [1.6, 11.5], [1.6, 13.0], [5.61, 5.0], [5.61, 8.5]].forEach(([x, z]) => {
+    const s = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.25, 12), M.accent); const [px, pz] = P(x, z); s.position.set(px, 3.1, pz); g.add(s);
+  });
+}
+
+if (state.view === "3d") window.build3D();
+</script>
+</body>
+</html>
